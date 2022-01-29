@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Birthday.Telegram.Bot</name>
+    </assembly>
+    <members>
+        <member name="T:Birthday.Telegram.Bot.Configurations.BotConfiguration">
+            <summary>
+            Configuration parameters for current bot
+            </summary>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Controllers.BotController">
+            <summary>
+            Main bot controller
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Controllers.BotController._logger">
+            <summary>
+            ILogger instance
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Controllers.BotController.#ctor(Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Controllers.BotController})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="logger">ILogger instance</param>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Program">
+            <summary>
+            Entrypoint for current project service
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Program.Main(System.String[])">
+            <summary>
+            Method main
+            </summary>
+            <param name="args">Additional arguments for project</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Program.CreateHostBuilder(System.String[])">
+            <summary>
+            Method for cheare Hot for project
+            </summary>
+            <param name="args">Additional arguments for project</param>
+            <returns>Instance of hots builder</returns>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Startup">
+            <summary>
+            Startup class with configurations for current project
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Startup.Configuration">
+            <summary>
+            IConfiguration property
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Startup.WebHostEnvironment">
+            <summary>
+            IWebHostEnvironment property
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="configuration">IConfiguration instance</param>
+            <param name="webHostEnvironment">IWebHostEnvironment instance</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Method for configuration DI services for current project
+            </summary>
+            <param name="services">Instance of IServiceCollection</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+             <param name="app">Instance of IApplicationBuilder</param>
+             <param name="env">Instance of IWebHostEnvironment</param>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Builder.ApplicationBuilderExtensions">
+            <summary>
+            Class with extensions for IAppicationBuilder instance
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.ApplicationBuilderExtensions.UserCustomSwagger(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Extemsion for put swagger in asp new middleware
+            </summary>
+            <param name="builder">Instance of IApplicationBuilder</param>
+            <returns>Instance of IApplicationBuilder</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ServiceCollectionsExtensions">
+            <summary>
+            Class with extensions for IServiceCollection
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionsExtensions.AddCustomOptions(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Configure additional IOptions params
+            </summary>
+            <param name="services">Instance of IServiceCollection</param>
+            <param name="configuration">Instance of IConfiguration</param>
+            <returns>IServiceCollection instance</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionsExtensions.AddCustomSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Register services for create connection to Swagger
+            </summary>
+            <param name="services">Instance of IServiceCollection</param>
+            <returns>IServiceCollection instance</returns>
+        </member>
+    </members>
+</doc>
