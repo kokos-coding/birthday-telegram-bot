@@ -1,8 +1,7 @@
-using System.Linq;
-using System.Threading.Tasks;
+using Birthday.Telegram.Bot.MediatR.Commands;
 using Birthday.Telegram.Bot.Models;
 using Birthday.Telegram.Bot.Services.Abstractions;
-using Microsoft.Extensions.Logging;
+using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -38,6 +37,12 @@ public class BotMessageService : IBotMessageService
 #endif
         var message = update.Message;
 
+        if (message is null)
+        {
+            _logger.LogInformation("Received message from chat {chatId} is empty", update.Id);
+            return;
+        }
+
         _logger.LogInformation("Received Message from {messageChatId}", message.Chat.Id);
 
         var firstEntityType = message
@@ -49,7 +54,7 @@ public class BotMessageService : IBotMessageService
             switch (message.Text)
             {
                 case Constants.BotCommands.Start:
-                    await _mediator.Send(new StartCommand(message));
+                    await _mediator.Send(new StartCommand());
                     break;
                 default:
                     _logger.LogError($"Unknown bot command \"{{messageText}}\"", message.Text);

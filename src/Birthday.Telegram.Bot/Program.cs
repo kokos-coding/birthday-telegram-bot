@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Birthday.Telegram.Bot.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Birthday.Telegram.Bot
 {
@@ -32,7 +29,22 @@ namespace Birthday.Telegram.Bot
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseConfiguration(BuildConfiguration());
                     webBuilder.UseStartup<Startup>();
                 });
+
+        public static IConfiguration BuildConfiguration()
+        {
+            var environment = Environment.GetEnvironmentVariable(Constants.DotNetConstants.WellKnownEnvironments.AspNetCoreEnvironment);
+            
+            var confBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false)
+                .AddJsonFile($"appsettings.{environment}.json", true)
+                .AddEnvironmentVariables();
+            if(environment == Environments.Development)
+                confBuilder.AddUserSecrets<Startup>();
+
+            return confBuilder.Build();
+        }
     }
 }

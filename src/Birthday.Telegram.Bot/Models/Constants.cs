@@ -16,4 +16,31 @@ public static class Constants
         public const string Start = "/start";
     }
 
+    /// <summary>
+    /// Constants for .Net Platform
+    /// </summary>
+    public static class DotNetConstants
+    {
+        /// <summary>
+        /// Well known environment variables
+        /// </summary>
+        public static class WellKnownEnvironments
+        {
+            /// <summary>
+            /// Asp net core environment variable
+            /// </summary>
+            public const string AspNetCoreEnvironment = "ASPNETCOREENVIRONMENT";
+        }
+    }
+
+    /// <summary>
+    /// Names of typed https clients
+    /// </summary>
+    public static class TypedHttpClients
+    {
+        /// <summary>
+        /// Telegram api http client name
+        /// </summary>
+        public static TypedHttpClientInformation TelegramApi = new("TelegramApi", "https://api.telegram.org");
+    }
 }

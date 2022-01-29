@@ -8,12 +8,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Birthday.Telegram.Bot", "src\Birthday.Telegram.Bot\Birthday.Telegram.Bot.csproj", "{29C4540E-E7F6-4289-AB32-FA2037FB1CD4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{C5365630-811D-11EC-808E-91EA450824CB}"
-ProjectSection(SolutionItems) = preProject
-	.gitignore = .gitignore
-	Directory.Build.props = Directory.Build.props
-	Directory.Build.targets = Directory.Build.targets
-	README.md = README.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Birthday.Telegram.Bot.DataAccess", "src\Birthday.Telegram.Bot.DataAccess\Birthday.Telegram.Bot.DataAccess.csproj", "{6CE4A6B3-3175-43DE-8AA7-20343757E09F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Birthday.Telegram.Bot.ApplicationServices", "src\Birthday.Telegram.Bot.ApplicationServices\Birthday.Telegram.Bot.ApplicationServices.csproj", "{ADCF6FC0-9E52-43C1-875B-9A7B65903122}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Birthday.Telegram.Bot.Domain", "src\Birthday.Telegram.Bot.Domain\Birthday.Telegram.Bot.Domain.csproj", "{5C7A5CC0-C3EF-46B4-8398-22451ABB5525}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,8 +34,23 @@ Global
 		{29C4540E-E7F6-4289-AB32-FA2037FB1CD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29C4540E-E7F6-4289-AB32-FA2037FB1CD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29C4540E-E7F6-4289-AB32-FA2037FB1CD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CE4A6B3-3175-43DE-8AA7-20343757E09F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CE4A6B3-3175-43DE-8AA7-20343757E09F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CE4A6B3-3175-43DE-8AA7-20343757E09F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CE4A6B3-3175-43DE-8AA7-20343757E09F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADCF6FC0-9E52-43C1-875B-9A7B65903122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADCF6FC0-9E52-43C1-875B-9A7B65903122}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADCF6FC0-9E52-43C1-875B-9A7B65903122}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADCF6FC0-9E52-43C1-875B-9A7B65903122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C7A5CC0-C3EF-46B4-8398-22451ABB5525}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C7A5CC0-C3EF-46B4-8398-22451ABB5525}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C7A5CC0-C3EF-46B4-8398-22451ABB5525}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C7A5CC0-C3EF-46B4-8398-22451ABB5525}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{29C4540E-E7F6-4289-AB32-FA2037FB1CD4} = {864F4D9C-2833-4E82-A823-B0B55A1CA832}
+		{6CE4A6B3-3175-43DE-8AA7-20343757E09F} = {864F4D9C-2833-4E82-A823-B0B55A1CA832}
+		{ADCF6FC0-9E52-43C1-875B-9A7B65903122} = {864F4D9C-2833-4E82-A823-B0B55A1CA832}
+		{5C7A5CC0-C3EF-46B4-8398-22451ABB5525} = {864F4D9C-2833-4E82-A823-B0B55A1CA832}
 	EndGlobalSection
 EndGlobal

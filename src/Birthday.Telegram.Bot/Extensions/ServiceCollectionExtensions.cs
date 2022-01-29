@@ -1,6 +1,5 @@
-using System.IO;
 using Birthday.Telegram.Bot.Configurations;
-using Microsoft.Extensions.Configuration;
+using Birthday.Telegram.Bot.Models;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -36,6 +35,20 @@ public static class ServiceCollectionsExtensions
                 options.IncludeXmlComments(Path.Combine(Directory.GetCurrentDirectory(),
                     "Birthday.Telegram.Bot.xml"));
             });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Add custom HttpClients for current service
+    /// </summary>
+    /// <param name="services">Instance of IServiceCollection</param>
+    /// <returns>IServiceCollection instance</returns>
+    public static IServiceCollection AddCustomHeepClients(this IServiceCollection services)
+    {
+        services.AddHttpClient();
+        services.AddHttpClient(Constants.TypedHttpClients.TelegramApi.ClientName,
+            it => { it.BaseAddress = new Uri(Constants.TypedHttpClients.TelegramApi.Address); });
 
         return services;
     }

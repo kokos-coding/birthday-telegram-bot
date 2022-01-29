@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Birthday.Telegram.Bot.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
@@ -17,11 +18,12 @@ namespace Birthday.Telegram.Bot.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="botMessageService">Instance of BotMessageService</param>
         /// <param name="logger">ILogger instance</param>
         public BotController(IBotMessageService botMessageService, ILogger<BotController> logger)
         {
             _logger = logger;
-            _botMessageService = _botMessageService;
+            _botMessageService = botMessageService;
         }
 
         /// <summary>
