@@ -14,6 +14,11 @@
             Access token for connecting to a telegram bot
             </summary>
         </member>
+        <member name="P:Birthday.Telegram.Bot.Configurations.BotConfiguration.HostAddress">
+            <summary>
+            Address for hosted service
+            </summary>
+        </member>
         <member name="P:Birthday.Telegram.Bot.Configurations.BotConfiguration.Socks5Host">
             <summary>
             Socks 5 host address
@@ -24,42 +29,29 @@
             Socks 5 port
             </summary>
         </member>
-        <member name="T:Birthday.Telegram.Bot.Controllers.BotConfigurationController">
-            <summary>
-            Controller for edit bot configuration
-            </summary>
-        </member>
-        <member name="M:Birthday.Telegram.Bot.Controllers.BotConfigurationController.#ctor(Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Controllers.BotConfigurationController},Microsoft.Extensions.Options.IOptions{Birthday.Telegram.Bot.Configurations.BotConfiguration},System.Net.Http.IHttpClientFactory)">
-            <summary>
-            Constructor
-            </summary>
-        </member>
-        <member name="M:Birthday.Telegram.Bot.Controllers.BotConfigurationController.SetWebhookUrlAsync(Birthday.Telegram.Bot.Models.InputModels.SetWebhookInputModel,System.Threading.CancellationToken)">
-            <summary>
-            Method for setting webhook for current telegram bot
-            </summary>
-            <param name="value">InputModel for set webhook</param>
-            <param name="cancellationToken">Instance of cancellation token</param>
-            <returns>Status end of operation</returns>
-        </member>
         <member name="T:Birthday.Telegram.Bot.Controllers.BotController">
             <summary>
             Main bot controller
             </summary>
         </member>
-        <member name="M:Birthday.Telegram.Bot.Controllers.BotController.#ctor(Birthday.Telegram.Bot.Services.Abstractions.IBotMessageService,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Controllers.BotController})">
+        <member name="M:Birthday.Telegram.Bot.Controllers.BotController.#ctor(Birthday.Telegram.Bot.Services.Abstractions.IBotUpdateService,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Controllers.BotController})">
             <summary>
             Constructor
             </summary>
             <param name="botMessageService">Instance of BotMessageService</param>
             <param name="logger">ILogger instance</param>
         </member>
-        <member name="M:Birthday.Telegram.Bot.Controllers.BotController.Post(Telegram.Bot.Types.Update)">
+        <member name="M:Birthday.Telegram.Bot.Controllers.BotController.Post(Telegram.Bot.Types.Update,System.Threading.CancellationToken)">
             <summary>
                 Post method for receive messages from Bot (Using webhook)
             </summary>
             <param name="update">New Update from bot</param>
             <returns>Ok Action or error</returns>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.MediatR.Commands.StartCommand">
+            <summary>
+            Start command request
+            </summary>
         </member>
         <member name="T:Birthday.Telegram.Bot.MediatR.Handlers.StartCommandHandler">
             <summary>
@@ -72,6 +64,13 @@
             </summary>
             <param name="mediator">IMediatR instance</param>
             <param name="logger">ILogger instance</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.MediatR.Handlers.StartCommandHandler.Handle(Birthday.Telegram.Bot.MediatR.Commands.StartCommand,System.Threading.CancellationToken)">
+            <summary>
+            Handle of request
+            </summary>
+            <param name="request">Request</param>
+            <param name="cancellationToken">Instance of cancellation token</param>
         </member>
         <member name="T:Birthday.Telegram.Bot.Models.Constants">
             <summary>
@@ -113,21 +112,23 @@
             Telegram api http client name
             </summary>
         </member>
-        <member name="T:Birthday.Telegram.Bot.Models.InputModels.SetWebhookInputModel">
+        <member name="T:Birthday.Telegram.Bot.Models.TypedHttpClientInformation">
             <summary>
-            Input model for SetWebhook method
+            Record that represent a typed http client
             </summary>
+            <param name="ClientName">Current client name</param>
+            <param name="Address">Current client address</param>
         </member>
-        <member name="P:Birthday.Telegram.Bot.Models.InputModels.SetWebhookInputModel.WebhookUrl">
+        <member name="M:Birthday.Telegram.Bot.Models.TypedHttpClientInformation.#ctor(System.String,System.String)">
             <summary>
-            Webhook Url
+            Record that represent a typed http client
             </summary>
+            <param name="ClientName">Current client name</param>
+            <param name="Address">Current client address</param>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:Birthday.Telegram.Bot.Models.TypedHttpClientInformation" -->
-        <!-- Badly formed XML comment ignored for member "M:Birthday.Telegram.Bot.Models.TypedHttpClientInformation.#ctor(System.String,System.String)" -->
         <member name="M:Birthday.Telegram.Bot.Models.TypedHttpClientInformation.ToString">
             <summary>
-                Get string from client
+            Get string from client
             </summary>
             <returns>Http client name</returns>
         </member>
@@ -149,30 +150,83 @@
             <param name="args">Additional arguments for project</param>
             <returns>Instance of hots builder</returns>
         </member>
-        <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotMessageService">
+        <member name="M:Birthday.Telegram.Bot.Program.BuildConfiguration">
+            <summary>
+            Build configuration for current project
+            </summary>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotChatMemberProcessor">
+            <summary>
+            Processor for chat member updates
+            </summary>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotMessageProcessor">
+            <summary>
+            Processor for messages
+            </summary>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor`1">
+            <summary>
+            Process for bot actions
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor`1.ProcessAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Process action
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotUpdateService">
             <summary>
             Service for processing messages coming from the bot
             </summary>
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.Abstractions.IBotMessageService.ProcessUpdateAsync(Telegram.Bot.Types.Update)">
+        <member name="M:Birthday.Telegram.Bot.Services.Abstractions.IBotUpdateService.ProcessUpdateAsync(Telegram.Bot.Types.Update,System.Threading.CancellationToken)">
             <summary>
             Method for processing message from bot
             </summary>
             <param name="update">Message update</param>
+            <param name="cancellationToken">Cancellation token instance</param>
             <returns>Completed task</returns>
         </member>
-        <member name="T:Birthday.Telegram.Bot.Services.BotMessageService">
-            <inheritdoc cref="T:Birthday.Telegram.Bot.Services.Abstractions.IBotMessageService" />
+        <member name="T:Birthday.Telegram.Bot.Services.BotUpdateService">
+            <inheritdoc cref="T:Birthday.Telegram.Bot.Services.Abstractions.IBotUpdateService" />
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotMessageService.#ctor(MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotMessageService})">
+        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotUpdateService},Birthday.Telegram.Bot.Services.Abstractions.IBotChatMemberProcessor)">
             <summary>
-                Constructor
+            Constructor
             </summary>
-            <param name="mediator"> Mediator</param>
-            <param name="logger"> Logge r</param>
+            <param name="botClient">Bot client instance</param>
+            <param name="mediator">Mediator</param>
+            <param name="logger">Logger</param>
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotMessageService.ProcessUpdateAsync(Telegram.Bot.Types.Update)">
-            <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotMessageService.ProcessUpdateAsync(Telegram.Bot.Types.Update)" />
+        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.ProcessUpdateAsync(Telegram.Bot.Types.Update,System.Threading.CancellationToken)">
+            <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotUpdateService.ProcessUpdateAsync(Telegram.Bot.Types.Update,System.Threading.CancellationToken)" />
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Services.ConfigureWebhookHostedService">
+            <summary>
+            Hosted service for configure webhook for current service
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.ConfigureWebhookHostedService.#ctor(System.IServiceProvider,Microsoft.Extensions.Options.IOptions{Birthday.Telegram.Bot.Configurations.BotConfiguration},Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.ConfigureWebhookHostedService})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="serviceProvider">Instance of IServiceProvider</param>
+            <param name="options">Instance of options for bot configuration</param>
+            <param name="logger">Instance of ILogger</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.ConfigureWebhookHostedService.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Start bot and set webhook
+            </summary>
+            <param name="cancellationToken">Cancellation token</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.ConfigureWebhookHostedService.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Stop bot work
+            </summary>
+            <param name="cancellationToken">Cancellation token</param>
         </member>
         <member name="T:Birthday.Telegram.Bot.Startup">
             <summary>
@@ -187,6 +241,11 @@
         <member name="P:Birthday.Telegram.Bot.Startup.WebHostEnvironment">
             <summary>
             IWebHostEnvironment property
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Startup.BotConfig">
+            <summary>
+            Bot configuration
             </summary>
         </member>
         <member name="M:Birthday.Telegram.Bot.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
@@ -241,11 +300,12 @@
             <param name="services">Instance of IServiceCollection</param>
             <returns>IServiceCollection instance</returns>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionsExtensions.AddCustomHeepClients(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionsExtensions.AddCustomServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Add custom HttpClients for current service
             </summary>
             <param name="services">Instance of IServiceCollection</param>
+            <param name="configuration">IConfiguration instance</param>
             <returns>IServiceCollection instance</returns>
         </member>
         <member name="T:DevQuiz.TelegramBot.Models.ApiResults.SetWebHookApiResult">
@@ -265,7 +325,7 @@
         </member>
         <member name="P:DevQuiz.TelegramBot.Models.ApiResults.SetWebHookApiResult.Description">
             <summary>
-                Description message
+            Description message
             </summary>
         </member>
     </members>

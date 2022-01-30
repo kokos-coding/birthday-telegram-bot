@@ -22,6 +22,11 @@ namespace Birthday.Telegram.Bot.MediatR.Handlers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Handle of request
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <param name="cancellationToken">Instance of cancellation token</param>
         public Task<Unit> Handle(StartCommand request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

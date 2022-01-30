@@ -11,6 +11,11 @@ namespace Birthday.Telegram.Bot.Domain.AggregationModels
         public int MemberId { get; set; }
 
         /// <summary>
+        /// Chat member name
+        /// </summary>
+        public string? Name { get; set; }
+
+        /// <summary>
         /// Birth Day of member
         /// </summary>
         public DateTime? BirthDay { get; set; }
@@ -18,6 +23,6 @@ namespace Birthday.Telegram.Bot.Domain.AggregationModels
         /// <summary>
         /// Link to chats for user
         /// </summary>
-        public ICollection<GroupChatChatMember> GroupChatChatMembers { get; set; } = new List<GroupChatChatMember>();
+        public ICollection<ChatChatMember> GroupChatChatMembers { get; set; } = new List<ChatChatMember>();
     }
 }

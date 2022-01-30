@@ -33,6 +33,9 @@ namespace Birthday.Telegram.Bot
                     webBuilder.UseStartup<Startup>();
                 });
 
+        /// <summary>
+        /// Build configuration for current project
+        /// </summary>
         public static IConfiguration BuildConfiguration()
         {
             var environment = Environment.GetEnvironmentVariable(Constants.DotNetConstants.WellKnownEnvironments.AspNetCoreEnvironment);

@@ -1,3 +1,4 @@
+using Birthday.Telegram.Bot.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,10 @@ namespace Birthday.Telegram.Bot
         /// IWebHostEnvironment property
         /// </summary>
         public IWebHostEnvironment WebHostEnvironment { get; set; }
+        /// <summary>
+        /// Bot configuration
+        /// </summary>
+        private BotConfiguration BotConfig { get; }
 
         /// <summary>
         /// Constructor
@@ -29,6 +34,7 @@ namespace Birthday.Telegram.Bot
         {
             Configuration = configuration;
             WebHostEnvironment = webHostEnvironment;
+            BotConfig = Configuration.GetSection(nameof(BotConfiguration)).Get<BotConfiguration>();
         }
 
         /// <summary>
@@ -38,9 +44,11 @@ namespace Birthday.Telegram.Bot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCustomOptions(Configuration)
-                .AddCustomSwagger();
+                .AddCustomServices(Configuration);
+                //.AddCustomSwagger();
 
-            services.AddControllers();
+            services.AddControllers()
+                    .AddNewtonsoftJson();
         }
 
         ///<summary>
@@ -55,16 +63,19 @@ namespace Birthday.Telegram.Bot
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //            app.UseHttpsRedirection();
+
+            //app.UserCustomSwagger();
 
             app.UseRouting();
-
-            app.UserCustomSwagger();
-
-            app.UseAuthorization();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
+                var token = BotConfig.AccessToken;
+                endpoints.MapControllerRoute(name: "tgwebhook",
+                                             pattern: $"api/{token}/update",
+                                             new { controller = "Bot", action = "Post" });
                 endpoints.MapControllers();
             });
         }

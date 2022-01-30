@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5425,
+            "driver": "PostgreSQL",
+            "name": "birthday-telegram-bot",
+            "database": "birthday-telegram-bot",
+            "username": "postgres",
+            "password": "postgres"
+        }
+    ]
+}

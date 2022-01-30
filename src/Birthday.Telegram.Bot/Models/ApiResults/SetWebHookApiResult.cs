@@ -16,7 +16,7 @@ public class SetWebHookApiResult
     public int Error_code { get; set; }
 
     /// <summary>
-    ///     Description message
+    /// Description message
     /// </summary>
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 }

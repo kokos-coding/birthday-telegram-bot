@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 
-namespace Birthday.Telegram.Bot.MediatR.Commands
+namespace Birthday.Telegram.Bot.MediatR.Commands;
+
+/// <summary>
+/// Start command request
+/// </summary>
+public class StartCommand : IRequest
 {
-    public class StartCommand : IRequest
-    {
-    }
 }
