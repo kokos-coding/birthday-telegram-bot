@@ -44,6 +44,7 @@ namespace Birthday.Telegram.Bot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCustomOptions(Configuration)
+                .AddDataAccess(Configuration)
                 .AddCustomServices(Configuration);
                 //.AddCustomSwagger();
 

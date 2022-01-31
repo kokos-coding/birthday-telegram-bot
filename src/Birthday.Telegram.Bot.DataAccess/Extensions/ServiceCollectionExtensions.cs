@@ -2,6 +2,10 @@ using Birthday.Telegram.Bot.DataAccess.Configurations;
 using Birthday.Telegram.Bot.DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Birthday.Telegram.Bot.Domain.Abstractions;
+using Birthday.Telegram.Bot.Domain.AggregationModels;
+using Birthday.Telegram.Bot.DataAccess;
+using Birthday.Telegram.Bot.DataAccess.Repositories;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -26,7 +30,9 @@ public static class ServiceCollectionsExtensions
             opt.UseNpgsql(dbConfiguration.ConnectionString);
         });
 
-        // services.AddScoped<>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IChatRepository, ChatRepository>();
+        services.AddScoped<IChatMemberRepository, ChatMemberRepository>();
 
         return services;
     }
