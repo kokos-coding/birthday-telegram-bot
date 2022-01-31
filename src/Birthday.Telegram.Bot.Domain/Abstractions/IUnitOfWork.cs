@@ -18,6 +18,11 @@ public interface IUnitOfWork
     IChatMemberRepository ChatMemberRepository { get; }
 
     /// <summary>
+    /// Start transaction on db connection
+    /// </summary>
+    ValueTask StartTransaction();
+
+    /// <summary>
     /// Commit all changes
     /// </summary>
     Task CommitAsync();

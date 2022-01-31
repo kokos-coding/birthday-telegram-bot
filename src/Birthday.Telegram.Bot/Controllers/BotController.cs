@@ -27,6 +27,7 @@ public class BotController : Controller
     ///     Post method for receive messages from Bot (Using webhook)
     /// </summary>
     /// <param name="update">New Update from bot</param>
+    /// <param name="cancellationToken">Token for cancel current operation</param>
     /// <returns>Ok Action or error</returns>
     [HttpPost()]
     public async Task<IActionResult> Post([FromBody] Update update, CancellationToken cancellationToken)

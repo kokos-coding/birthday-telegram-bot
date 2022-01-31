@@ -6,8 +6,8 @@ namespace Birthday.Telegram.Bot.DataAccess.DbContexts
     public class BirthdayBotDbContext : DbContext
     {
         public DbSet<ChatMember> ChatMembers { get; set; }
-        public DbSet<Chat> GroupChats { get; set; }
-        public DbSet<ChatChatMember> GroupChatChatMembers { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatChatMember> ChatChatMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

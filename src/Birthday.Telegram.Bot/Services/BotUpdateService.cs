@@ -25,6 +25,7 @@ public class BotUpdateService : IBotUpdateService
     /// <param name="botClient">Bot client instance</param>
     /// <param name="mediator">Mediator</param>
     /// <param name="logger">Logger</param>
+    /// <param name="botChatMessageProcessor">Instance of processor for chat messages</param>
     public BotUpdateService(
         ITelegramBotClient botClient,
         IMediator mediator,
@@ -188,7 +189,7 @@ public class BotUpdateService : IBotUpdateService
             text: $"Received {callbackQuery.Data}");
 
         await _botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message.Chat.Id,
+            chatId: callbackQuery.Message!.Chat.Id,
             text: $"Received {callbackQuery.Data}");
     }
 
@@ -229,6 +230,10 @@ public class BotUpdateService : IBotUpdateService
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Handle raised error in system
+    /// </summary>
+    /// <param name="exception">Current exception</param>
     public Task HandleErrorAsync(Exception exception)
     {
         var ErrorMessage = exception switch

@@ -20,7 +20,7 @@ public static class ServiceCollectionsExtensions
     {
         var dbConfiguration = configuration.GetSection(nameof(DbConfiguration)).Get<DbConfiguration>();
         if(string.IsNullOrWhiteSpace(dbConfiguration.ConnectionString))
-            throw new Exception($"Connection string is not defined. Please define configuration {nameof(DbConfiguration)}:{nameof(DbConfiguration.ConnectionString)}")
+            throw new Exception($"Connection string is not defined. Please define configuration {nameof(DbConfiguration)}:{nameof(DbConfiguration.ConnectionString)}");
 
         services.AddDbContext<BirthdayBotDbContext>(opt => {
             opt.UseNpgsql(dbConfiguration.ConnectionString);

@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Birthday.Telegram.Bot.Domain.Abstractions;
 using Birthday.Telegram.Bot.Domain.AggregationModels;
-using Microsoft.EntityFrameworkCore;
+using Birthday.Telegram.Bot.DataAccess.DbContexts;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Birthday.Telegram.Bot.DataAccess;
 
@@ -17,7 +14,8 @@ public class UnitOfWork : IUnitOfWork
     /// <inheritdoc cref="ChatMemberRepository" />
     public IChatMemberRepository ChatMemberRepository { get; }
 
-    private readonly DbContext _dbContext;
+    private readonly BirthdayBotDbContext _dbContext;
+    private IDbContextTransaction? _dbContextTransaction = null;
 
     /// <summary>
     /// Constructor
@@ -25,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
     /// <param name="dbContext">DbContext instance</param>
     /// <param name="chatRepository">Instance of ChatRepository</param>
     /// <param name="chatMemberRepository">Instance of ChatMemberRepository</param>
-    public UnitOfWork(DbContext dbContext,
+    public UnitOfWork(BirthdayBotDbContext dbContext,
         IChatRepository chatRepository, 
         IChatMemberRepository chatMemberRepository)
     {
@@ -34,11 +32,17 @@ public class UnitOfWork : IUnitOfWork
         ChatMemberRepository = chatMemberRepository;
     }
 
-    /// <summary>
-    /// Commit all changes
-    /// </summary>
+    /// <inheritdoc cref="StartTransaction"/>
+    public async ValueTask StartTransaction()
+    {
+        _dbContextTransaction = await _dbContext.Database.BeginTransactionAsync();
+    }
+
+    /// <inheritdoc cref="CommitAsync"/>
     public async Task CommitAsync()
     {
+        if(_dbContextTransaction is null)
+            throw new Exception("Transaction is not started. Please before commit changes start transaction");
         await _dbContext.SaveChangesAsync();
     }
 }

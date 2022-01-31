@@ -5,15 +5,22 @@ using Telegram.Bot.Types.Enums;
 
 namespace Birthday.Telegram.Bot.Services;
 
+/// <summary>
+/// Processor for bot chat members
+/// </summary>
 public class BotChatMemberProcessor : IBotChatMemberProcessor
 {
     private readonly ITelegramBotClient _telegramBotClient;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public BotChatMemberProcessor(ITelegramBotClient telegramBotClient)
     {
         _telegramBotClient = telegramBotClient;
     }
 
+    /// <inheritdoc cref="ProcessAsync"/>
     public async Task ProcessAsync(ChatMemberUpdated action, CancellationToken cancellationToken)
     {
         var processStatus = action.NewChatMember.Status;
