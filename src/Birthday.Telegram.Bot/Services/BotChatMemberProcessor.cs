@@ -56,7 +56,7 @@ public class BotChatMemberProcessor : IBotChatMemberProcessor
         var helloMessageString = @$"Привет всем\! 
 Я Ваш помощник для отслеживания дней рождений\.
 Чтобы начать вам помогать мне нужна некая информация
-Для этого\, пожалуйста\, переидете по [этой](https://t.me/{botInfo.Username}?start=-{chatInfo.Id}) ссылочке и ответьте на парочку вопросов
+Для этого\, пожалуйста\, перейдите по [этой](https://t.me/{botInfo.Username}?start={chatInfo.Id}) ссылочке и ответьте на парочку вопросов
 
 Я не читаю ваши переписки, мне это совершенно не нужно\.";
 

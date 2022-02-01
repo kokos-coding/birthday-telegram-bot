@@ -67,6 +67,7 @@ public static class ServiceCollectionsExtensions
         services.AddScoped<IBotUpdateService, BotUpdateService>();
 
         services.AddScoped<IBotChatMemberProcessor, BotChatMemberProcessor>();
+        services.AddScoped<IBotMessageProcessor, BotMessageProcessor>();
 
         return services;
     }

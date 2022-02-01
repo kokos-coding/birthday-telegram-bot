@@ -49,6 +49,11 @@
             <param name="cancellationToken">Token for cancel current operation</param>
             <returns>Ok Action or error</returns>
         </member>
+        <member name="T:Birthday.Telegram.Bot.Controls.CalendarPicker">
+            <summary>
+            Calendar picker control
+            </summary>
+        </member>
         <member name="T:Birthday.Telegram.Bot.MediatR.Commands.StartCommand">
             <summary>
             Start command request
@@ -112,6 +117,28 @@
             <summary>
             Telegram api http client name
             </summary>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Models.Messages">
+            <summary>
+            Static class with prebuild messages
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Models.Messages.SpecialSymbols">
+            <summary>
+            REgex spec symbols
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Models.Messages.ParseMode">
+            <summary>
+            Parse mode for all messages
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Models.Messages.HelloMessage(System.String)">
+            <summary>
+            Hello message
+            </summary>
+            <param name="userName">Message for whom</param>
         </member>
         <member name="T:Birthday.Telegram.Bot.Models.TypedHttpClientInformation">
             <summary>
@@ -203,17 +230,33 @@
         <member name="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.ProcessAsync(Telegram.Bot.Types.ChatMemberUpdated,System.Threading.CancellationToken)">
             <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.ProcessAsync(Telegram.Bot.Types.ChatMemberUpdated,System.Threading.CancellationToken)"/>
         </member>
+        <member name="T:Birthday.Telegram.Bot.Services.BotMessageProcessor">
+            <summary>
+            Processor for bot massages
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.BotMessageProcessor.#ctor(Telegram.Bot.ITelegramBotClient,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotMessageProcessor})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="telegramBotClient">Instance of telegram bot client</param>
+            <param name="logger">Instance of Logger</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.BotMessageProcessor.ProcessAsync(Telegram.Bot.Types.Message,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:Birthday.Telegram.Bot.Services.BotUpdateService">
             <inheritdoc cref="T:Birthday.Telegram.Bot.Services.Abstractions.IBotUpdateService" />
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotUpdateService},Birthday.Telegram.Bot.Services.Abstractions.IBotChatMemberProcessor)">
+        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotUpdateService},Birthday.Telegram.Bot.Services.Abstractions.IBotChatMemberProcessor,Birthday.Telegram.Bot.Services.Abstractions.IBotMessageProcessor)">
             <summary>
             Constructor
             </summary>
             <param name="botClient">Bot client instance</param>
             <param name="mediator">Mediator</param>
             <param name="logger">Logger</param>
-            <param name="botChatMessageProcessor">Instance of processor for chat messages</param>
+            <param name="botChatMemberProcessor">Instance of processor for chat members</param>
+            <param name="botMessageProcessor">Instance of processor for messages</param>
         </member>
         <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.ProcessUpdateAsync(Telegram.Bot.Types.Update,System.Threading.CancellationToken)">
             <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotUpdateService.ProcessUpdateAsync(Telegram.Bot.Types.Update,System.Threading.CancellationToken)" />

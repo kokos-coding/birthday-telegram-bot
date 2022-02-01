@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Birthday.Telegram.Bot.Services.Abstractions;
 
 /// <summary>
@@ -14,5 +9,5 @@ public interface IBotProcessor<TAction>
     /// Process action
     /// </summary>
     /// <returns></returns>
-    public Task ProcessAsync(TAction action, CancellationToken cancellationToken);
+    Task ProcessAsync(TAction action, CancellationToken cancellationToken);
 }
