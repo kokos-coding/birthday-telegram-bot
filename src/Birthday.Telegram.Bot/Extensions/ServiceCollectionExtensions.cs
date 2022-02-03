@@ -3,6 +3,8 @@ using Birthday.Telegram.Bot.Models;
 using Birthday.Telegram.Bot.Services;
 using Birthday.Telegram.Bot.Services.Abstractions;
 using Telegram.Bot;
+using FluentMigrator.Runner;
+using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -68,6 +70,27 @@ public static class ServiceCollectionsExtensions
 
         services.AddScoped<IBotChatMemberProcessor, BotChatMemberProcessor>();
         services.AddScoped<IBotMessageProcessor, BotMessageProcessor>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Добавить настройки логирования для данного проекта
+    /// </summary>
+    /// <param name="services">Экземпляр коллекции сервисов типа IServiceCollection</param>
+    /// <returns>Экземпляр коллекции сервисов типа IServiceCollection</returns>
+    public static IServiceCollection AddCustomLogging(this IServiceCollection services)
+    {
+        services.AddLogging(opt =>
+        {
+            opt.AddConsole();
+#if(DEBUG)
+            opt.SetMinimumLevel(LogLevel.Debug);
+#else
+            opt.SetMinimumLevel(LogLevel.Information);
+#endif
+
+        });
 
         return services;
     }

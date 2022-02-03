@@ -13,11 +13,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Telegram.Bot" Version="17.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
+    <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
+    <PackageReference Include="FluentMigrator.Runner.Postgres" Version="3.3.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Birthday.Telegram.Bot.DataAccess\Birthday.Telegram.Bot.DataAccess.csproj" />
     <ProjectReference Include="..\Birthday.Telegram.Bot.ApplicationServices\Birthday.Telegram.Bot.ApplicationServices.csproj" />
+    <ProjectReference Include="..\Birthday.Telegram.Bot.Migrations\Birthday.Telegram.Bot.Migrations.csproj" />
   </ItemGroup>
 
 </Project>

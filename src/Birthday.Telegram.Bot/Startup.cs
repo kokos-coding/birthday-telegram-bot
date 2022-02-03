@@ -45,7 +45,8 @@ namespace Birthday.Telegram.Bot
         {
             services.AddCustomOptions(Configuration)
                 .AddDataAccess(Configuration)
-                .AddCustomServices(Configuration);
+                .AddCustomServices(Configuration)
+                .AddCustomLogging();
                 //.AddCustomSwagger();
 
             services.AddControllers()
