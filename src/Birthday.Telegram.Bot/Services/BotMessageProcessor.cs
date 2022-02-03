@@ -190,7 +190,7 @@ public class BotMessageProcessor : IBotMessageProcessor
                                                 cancellationToken: cancellationToken);
 
             await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
-                                                text: Messages.MessageForGetBirthday(chatInfo.Username!, mainChatInfo.Title!),
+                                                text: Messages.MessageForGetBirthdayDate(chatInfo.Username!, mainChatInfo.Title!),
                                                 parseMode: Messages.ParseMode,
                                                 cancellationToken: cancellationToken);
 
