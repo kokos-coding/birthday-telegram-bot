@@ -1,23 +1,27 @@
-namespace Birthday.Telegram.Bot.Domain.AggregationModels
+using Birthday.Telegram.Bot.Domain.Models.Abstractions;
+
+namespace Birthday.Telegram.Bot.Domain.AggregationModels;
+
+/// <summary>
+/// Model that represent chat information
+/// </summary>
+public class Chat : IIdModel<long>
 {
+    /// <inheritdoc cref="Id"/>
+    public long Id { get; set; }
+
     /// <summary>
-    /// Model that represent chat information
+    /// Identifier of main chat id
     /// </summary>
-    public class Chat
-    {
-        /// <summary>
-        /// Identifier of main chat id
-        /// </summary>
-        public int ChatId { get; set; }
+    public long ChatId { get; set; }
 
-        /// <summary>
-        /// Discussion chat id
-        /// </summary>
-        public int DiscussionChatId { get; set; }
+    /// <summary>
+    /// Discussion chat id
+    /// </summary>
+    public long DiscussionChatId { get; set; }
 
-        /// <summary>
-        /// Link to main chat members
-        /// </summary>
-        public ICollection<ChatChatMember> GroupChatChatMembers { get; set; } = new List<ChatChatMember>();
-    }
+    /// <summary>
+    /// Link to main chat members
+    /// </summary>
+    public ICollection<ChatChatMember> GroupChatChatMembers { get; set; } = new List<ChatChatMember>();
 }

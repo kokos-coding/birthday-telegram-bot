@@ -7,11 +7,19 @@ public class InitialMigration : Migration
 {
     public override void Down()
     {
-        throw new NotImplementedException();
+        Delete.Table(Constants.TableNames.Chats);
+
+        Delete.Table(Constants.TableNames.ChatMembers);
+        
+        Delete.Table(Constants.TableNames.ChatsChatMembers);
     }
 
     public override void Up()
     {
-        Create.Table
+        Create.Table(Constants.TableNames.Chats);
+
+        Create.Table(Constants.TableNames.ChatMembers);
+
+        Create.Table(Constants.TableNames.ChatsChatMembers);
     }
 }
