@@ -39,10 +39,12 @@ public class ChatMemberRepository : IChatMemberRepository
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc cref="DeleteAsync(int, CancellationToken)" />
-    public async Task DeleteAsync(int chatMemberId, CancellationToken cancellationToken)
+    /// <inheritdoc cref="DeleteAsync(long, CancellationToken)" />
+    public async Task DeleteAsync(long chatMemberId, CancellationToken cancellationToken)
     {
-        var chatMemberInDb = await _dbContext.ChatMembers.FirstOrDefaultAsync(it => it.MemberId.Equals(chatMemberId));
+        var chatMemberInDb = await _dbContext
+                            .ChatMembers
+                            .FirstOrDefaultAsync(it => it.MemberId.Equals(chatMemberId), cancellationToken);
 
         if (chatMemberInDb is null)
             throw new Exception($"Chat member with id {chatMemberId} not found in store");
@@ -50,7 +52,10 @@ public class ChatMemberRepository : IChatMemberRepository
     }
 
     /// <inheritdoc cref="GetByChatMemberId" />
-    public Task<ChatMember?> GetByChatMemberId(int chatMemberId, CancellationToken cancellationToken) => 
-        _dbContext.ChatMembers.FirstOrDefaultAsync(it => it.MemberId.Equals(chatMemberId));
+    public Task<ChatMember?> GetByChatMemberId(long chatMemberId, CancellationToken cancellationToken) => 
+        _dbContext.ChatMembers
+            .Include(it => it.GroupChatChatMembers)
+            .ThenInclude(it => it.Chat)
+            .FirstOrDefaultAsync(it => it.MemberId.Equals(chatMemberId), cancellationToken);
     
 }

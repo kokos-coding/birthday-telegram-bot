@@ -194,12 +194,19 @@ public class BotMessageProcessor : IBotMessageProcessor
                                                 parseMode: Messages.ParseMode,
                                                 cancellationToken: cancellationToken);
 
-            var nowDate = DateTime.Now;
-
-            await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
+            var keyboard = CalendarPicker.InitializeCalendarPickerKeyboard(DateTime.Now);
+            try{
+            var result = await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
                                                 text: "Выберете дату своего рождения",
-                                                replyMarkup: CalendarPicker.GetYearsKeyboard(nowDate),
+                                                replyMarkup: keyboard,
                                                 cancellationToken: cancellationToken);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+            }
+
+            var asd = 1+ 1;
         }
     }
 }

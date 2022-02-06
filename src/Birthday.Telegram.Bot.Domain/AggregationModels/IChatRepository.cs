@@ -32,7 +32,7 @@ public interface IChatRepository
     /// </summary>
     /// <param name="chatId">Chat id</param>
     /// <param name="cancellationToken">Instance of Cancellation token</param>
-    Task DeleteAsync(int chatId, CancellationToken cancellationToken);
+    Task DeleteAsync(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get chat info by chat id
@@ -40,5 +40,5 @@ public interface IChatRepository
     /// <param name="chatId">Chat id for search</param>
     /// <param name="cancellationToken">Instance of Cancellation token</param>
     /// <returns>Information about chat</returns>
-    Task<Chat?> GetByChatId(int chatId, CancellationToken cancellationToken);
+    Task<Chat?> GetByChatId(long chatId, CancellationToken cancellationToken);
 }

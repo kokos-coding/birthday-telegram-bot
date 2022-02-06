@@ -29,7 +29,7 @@ public static class Constants
             /// <summary>
             /// Asp net core environment variable
             /// </summary>
-            public const string AspNetCoreEnvironment = "ASPNETCOREENVIRONMENT";
+            public const string AspNetCoreEnvironment = "ASPNETCORE_ENVIRONMENT";
         }
     }
 

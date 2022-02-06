@@ -20,10 +20,10 @@ public interface IUnitOfWork
     /// <summary>
     /// Start transaction on db connection
     /// </summary>
-    ValueTask StartTransaction();
+    ValueTask StartTransactionAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Commit all changes
     /// </summary>
-    Task CommitAsync();
+    Task CommitAsync(CancellationToken cancellationToken);
 }

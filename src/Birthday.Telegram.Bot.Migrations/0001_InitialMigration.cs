@@ -16,10 +16,30 @@ public class InitialMigration : Migration
 
     public override void Up()
     {
-        Create.Table(Constants.TableNames.Chats);
+        var chatRawSql = @$"CREATE TABLE IF NOT EXISTS ""{Constants.TableNames.Chats}"" (" + 
+        @"""id"" bigserial,
+        ""chat_id"" bigint not null,
+        ""discussion_chat_id"" bigint null,
+        PRIMARY KEY (""id"")
+        )";
 
-        Create.Table(Constants.TableNames.ChatMembers);
+        var chatMemberRawSql = @$"CREATE TABLE IF NOT EXISTS ""{Constants.TableNames.ChatMembers}"" (" + 
+        @"""id"" bigserial,
+        ""member_id"" bigint not null, 
+        ""username"" varchar(200) null,
+        ""birth_day"" timestamptz null,
+        PRIMARY KEY (""id"")
+        )";
 
-        Create.Table(Constants.TableNames.ChatsChatMembers);
+        var chatChatMembersMemberRawSql = @$"CREATE TABLE IF NOT EXISTS ""{Constants.TableNames.ChatsChatMembers}"" (" + 
+        @"""chat_id"" bigint," + 
+        @"""member_id"" bigint," + 
+        $"constraint fk_chat_chatmember foreign key (\"chat_id\") references \"{Constants.TableNames.Chats}\"," +
+        $"constraint fk_chatmember_chat foreign key (\"member_id\") references \"{Constants.TableNames.ChatMembers}\"" +
+        ")";
+
+        Execute.Sql(chatRawSql);
+        Execute.Sql(chatMemberRawSql);
+        Execute.Sql(chatChatMembersMemberRawSql);
     }
 }

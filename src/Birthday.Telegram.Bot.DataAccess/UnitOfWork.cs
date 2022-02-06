@@ -32,17 +32,17 @@ public class UnitOfWork : IUnitOfWork
         ChatMemberRepository = chatMemberRepository;
     }
 
-    /// <inheritdoc cref="StartTransaction"/>
-    public async ValueTask StartTransaction()
+    /// <inheritdoc cref="StartTransactionAsync"/>
+    public async ValueTask StartTransactionAsync(CancellationToken cancellationToken)
     {
-        _dbContextTransaction = await _dbContext.Database.BeginTransactionAsync();
+        _dbContextTransaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
     }
 
     /// <inheritdoc cref="CommitAsync"/>
-    public async Task CommitAsync()
+    public async Task CommitAsync(CancellationToken cancellationToken)
     {
         if(_dbContextTransaction is null)
             throw new Exception("Transaction is not started. Please before commit changes start transaction");
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

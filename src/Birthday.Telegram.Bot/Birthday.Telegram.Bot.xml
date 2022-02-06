@@ -54,6 +54,33 @@
             Calendar picker control
             </summary>
         </member>
+        <member name="F:Birthday.Telegram.Bot.Controls.CalendarPicker.MinimalDate">
+            <summary>
+            Минимально возможная дата
+            </summary>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Helpers.MigrationsHelper">
+            <summary>
+            Helper class with db migration
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Helpers.MigrationsHelper.RunMigrations(System.Reflection.Assembly,System.String)">
+            <summary>
+            Start execute migration
+            </summary>
+            <param name="assemblyWithMigrations">Сборка в которой хранятся миграции</param>
+            <param name="connectionString">Строка подключения к БД</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Helpers.MigrationsHelper.CreateServices(System.Reflection.Assembly,System.String)">
+            <summary>
+            Configure the dependency injection services
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Helpers.MigrationsHelper.RunMigrations(System.IServiceProvider)">
+            <summary>
+            Update the database
+            </summary>
+        </member>
         <member name="T:Birthday.Telegram.Bot.MediatR.Commands.StartCommand">
             <summary>
             Start command request
@@ -139,6 +166,31 @@
             Hello message
             </summary>
             <param name="userName">Message for whom</param>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Models.Messages.MessageForGetBirthdayDate(System.String,System.String)">
+            <summary>
+            Приветственное сообщение когда бот хочет получить дату рождения пользователя
+            </summary>
+            <param name="userName">Имя пользователя</param>
+            <param name="fromChatName">Откуда пришел пользователь</param>
+            <returns>Сообщение</returns>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Models.Messages.HelloMessageFromBotToMainChat(System.String,System.String)">
+            <summary>
+            Приветственное сообщение от бота, когда он входит в главный чат
+            </summary>
+            <param name="botName">Название бота</param>
+            <param name="mainChatId">Идентификатор главного чата</param>
+            <returns>Приветственное сообщение</returns>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Models.Messages.HelloMessageForNewChatUser(System.String,System.String,System.String)">
+            <summary>
+            Приветственное сообщение от бота, когда новый пользователь входит в чат
+            </summary>
+            <param name="newUserName">Имя нового пользователя чата</param>
+            <param name="botName">Название бота</param>
+            <param name="mainChatId">Идентификатор главного чата</param>
+            <returns>Приветственное сообщение</returns>
         </member>
         <member name="T:Birthday.Telegram.Bot.Models.TypedHttpClientInformation">
             <summary>
@@ -229,6 +281,32 @@
         </member>
         <member name="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.ProcessAsync(Telegram.Bot.Types.ChatMemberUpdated,System.Threading.CancellationToken)">
             <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.ProcessAsync(Telegram.Bot.Types.ChatMemberUpdated,System.Threading.CancellationToken)"/>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.RemoveBotFromChatAction(Telegram.Bot.Types.Chat,System.Threading.CancellationToken)">
+            <summary>
+            Действия при удалении бота из чата
+            </summary>
+            <param name="chatInfo">Информация о чате из которого удалили бота</param>
+            <param name="cancellationToken">Токен отмены операции</param>
+            <returns>Задача</returns>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.AddNewMemberChatAction(Telegram.Bot.Types.Chat,Telegram.Bot.Types.User,Telegram.Bot.Types.User,System.Threading.CancellationToken)">
+            <summary>
+            Действие при добавлении нового пользователя в чат
+            </summary>
+            <param name="chatInfo">Информация о чате в который добавлен пользователь</param>
+            <param name="newUser">Информация о новом пользователе</param>
+            <param name="botInfo">Информация о новом боте</param>
+            <param name="cancellationToken">Токен отмены операции</param>
+            <returns>Задача</returns>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.RemoveMemberFromChatAction(Telegram.Bot.Types.Chat,System.Threading.CancellationToken)">
+            <summary>
+            Действие при удалении пользователя из чата
+            </summary>
+            <param name="chatInfo">Информация о чате из которого удален пользователь</param>
+            <param name="cancellationToken">Токен отмены операции</param>
+            <returns>Задача</returns>
         </member>
         <member name="T:Birthday.Telegram.Bot.Services.BotMessageProcessor">
             <summary>
@@ -371,6 +449,13 @@
             <param name="services">Instance of IServiceCollection</param>
             <param name="configuration">IConfiguration instance</param>
             <returns>IServiceCollection instance</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceCollectionsExtensions.AddCustomLogging(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Добавить настройки логирования для данного проекта
+            </summary>
+            <param name="services">Экземпляр коллекции сервисов типа IServiceCollection</param>
+            <returns>Экземпляр коллекции сервисов типа IServiceCollection</returns>
         </member>
         <member name="T:DevQuiz.TelegramBot.Models.ApiResults.SetWebHookApiResult">
             <summary>
