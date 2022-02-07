@@ -1,3 +1,4 @@
+using System.Globalization;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Birthday.Telegram.Bot.Controls;
@@ -11,30 +12,44 @@ public static class CalendarPicker
     /// Минимально возможная дата
     /// </summary>
     public static DateTime MinimalDate = new(1800, 01, 01);
-    public static string CalendarPickerCommand => "/calendar-picker";
+    public static string CalendarPickerCommand => "/calendarpicker";
+    private static class CalendarPickerSubCommands
+    {
+        public const string GetYearsKeyboard = "yearskeyboard";
+        public const string YearBack = "yearback";
+        public const string YearForward = "yearforward";
+        public const string SetYear = "setyear";
+        public const string MonthBack = "monthback";
+        public const string MonthForward = "monthforward";
+        public const string SetDate = "setdate";
+    }
 
-    public static bool IsCalendarPickerCommand(string command) => 
-        command.StartsWith(CalendarPickerCommand);
+    private const string EmptyInlineKeyboardButton = " ";
+
+    public static bool IsCalendarPickerCommand(string command, CultureInfo cultureInfo) =>
+        command.StartsWith(CalendarPickerCommand, false, cultureInfo);
 
     public static InlineKeyboardMarkup? CalendarPickerProcessor(string calendarPickerCommand)
     {
         var subCalendarPickerCommand = calendarPickerCommand
                 .TrimStart(CalendarPickerCommand.ToCharArray())
+                .Trim(' ')
                 .Split(' ')
                 .ToArray();
-        if(subCalendarPickerCommand.Length != 2)
+        if (subCalendarPickerCommand.Length != 2)
             return null;
-        
+
         var subCommand = subCalendarPickerCommand.First();
-        if(DateTime.TryParse(subCalendarPickerCommand.Last(), out var currentDate))
+        if (DateTime.TryParse(subCalendarPickerCommand.Last(), out var currentDate))
         {
             var action = subCommand switch
             {
+                CalendarPickerSubCommands.GetYearsKeyboard => GetYearsKeyboard(currentDate),
                 CalendarPickerSubCommands.YearBack => GetYearsKeyboard(currentDate.AddYears(-9)),
                 CalendarPickerSubCommands.YearForward => GetYearsKeyboard(currentDate.AddYears(9)),
                 CalendarPickerSubCommands.MonthBack => GetCalendarKeyboard(currentDate.AddMonths(-1)),
                 CalendarPickerSubCommands.MonthForward => GetCalendarKeyboard(currentDate.AddMonths(1)),
-                CalendarPickerSubCommands.SetYear => "",
+                CalendarPickerSubCommands.SetYear => GetCalendarKeyboard(currentDate),
                 _ => throw new NotImplementedException(),
             };
             return action;
@@ -42,16 +57,7 @@ public static class CalendarPicker
         return null;
     }
 
-    public static InlineKeyboardMarkup InitializeCalendarPickerKeyboard(DateTime currentDateTime) => GetYearsKeyboard(currentDateTime);
-
-    private static class CalendarPickerSubCommands
-    {
-        public const string YearBack = "year-back";
-        public const string YearForward = "year-forward";
-        public const string MonthBack = "month-back";
-        public const string MonthForward = "month-forward";
-        public const string SetYear = "set-year";
-    }
+    public static InlineKeyboardMarkup InitializeCalendarPickerKeyboard(DateTime currentDateTime) => GetCalendarKeyboard(currentDateTime);
 
     private static InlineKeyboardMarkup GetYearsKeyboard(DateTime centralDate)
     {
@@ -63,35 +69,36 @@ public static class CalendarPicker
             centralDate = new DateTime(MinimalDate.Year, centralDate.Month, centralDate.Day);
             showLeftArrow = false;
         }
-        if (nowDate.Year < centralDate.Year)
+        if (nowDate.Year <= centralDate.Year)
         {
             centralDate = new DateTime(nowDate.Year, centralDate.Month, centralDate.Day);
             showRightArrow = false;
         }
 
         InlineKeyboardButton GetYearKeyBoardButton(DateTime centralDate, int deviation) =>
-            InlineKeyboardButton.WithCallbackData(centralDate.AddYears(deviation).Year.ToString(), 
+            InlineKeyboardButton.WithCallbackData(centralDate.AddYears(deviation).Year.ToString(),
                                             $"{CalendarPickerCommand} {CalendarPickerSubCommands.SetYear} {centralDate.AddYears(deviation).ToShortDateString()}");
 
         var bottomLine = showLeftArrow && showRightArrow ?
             new InlineKeyboardButton[]
             {
                     InlineKeyboardButton.WithCallbackData("<", $"{CalendarPickerCommand} {CalendarPickerSubCommands.YearBack} {centralDate.ToShortDateString()}"),
-                    new InlineKeyboardButton("..."),
+                    EmptyInlineKeyboardButton!,
                     InlineKeyboardButton.WithCallbackData(">", $"{CalendarPickerCommand} {CalendarPickerSubCommands.YearForward} {centralDate.ToShortDateString()}")
             } : showRightArrow ?
             new InlineKeyboardButton[]
             {
-                    InlineKeyboardButton.WithCallbackData("<", $"{CalendarPickerCommand} {CalendarPickerSubCommands.YearBack} {centralDate.ToShortDateString()}"),
-                    new InlineKeyboardButton("..."),
-                    new InlineKeyboardButton("..."),
+                    EmptyInlineKeyboardButton!,
+                    EmptyInlineKeyboardButton!,
+                    InlineKeyboardButton.WithCallbackData(">", $"{CalendarPickerCommand} {CalendarPickerSubCommands.YearForward} {centralDate.ToShortDateString()}")
             } :
             new InlineKeyboardButton[]
             {
-                    new InlineKeyboardButton("..."),
-                    new InlineKeyboardButton("..."),
-                    InlineKeyboardButton.WithCallbackData(">", $"{CalendarPickerCommand} {CalendarPickerSubCommands.YearForward} {centralDate.ToShortDateString()}")
+                    InlineKeyboardButton.WithCallbackData("<", $"{CalendarPickerCommand} {CalendarPickerSubCommands.YearBack} {centralDate.ToShortDateString()}"),
+                    EmptyInlineKeyboardButton!,
+                    EmptyInlineKeyboardButton!,
             };
+            
 
         var result = new InlineKeyboardMarkup(new[]
         {
@@ -124,29 +131,98 @@ public static class CalendarPicker
 
     private static InlineKeyboardMarkup GetCalendarKeyboard(DateTime currentDate)
     {
-        
-        var result = new InlineKeyboardMarkup(new InlineKeyboardButton[] { });
+        InlineKeyboardButton[] GetHeader(DateTime currentDate)
+        {
+            return new InlineKeyboardButton[]
+            {
+                InlineKeyboardButton.WithCallbackData($"{Months[CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(currentDate.Month)].Name} {currentDate.Year}",
+                    $"{CalendarPickerCommand} {CalendarPickerSubCommands.GetYearsKeyboard} {currentDate.ToShortDateString()}")
+            };
+        }
 
-        return result;
+        IEnumerable<InlineKeyboardButton> GetDaysOfWeek()
+        {
+            var dayNames = new InlineKeyboardButton[7];
+            var keys = DaysOfWeek.Keys.ToList();
+            foreach (var key in keys)
+            {
+                yield return DaysOfWeek[key].ShortName!;
+            }
+        }
+
+        IEnumerable<InlineKeyboardButton[]> GetCalendar(DateTime currentDate)
+        {
+            var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1).Day;
+
+            for (int dayOfMonth = 1, weekNum = 0; dayOfMonth <= lastDayOfMonth; weekNum++)
+            {
+                yield return NewWeek(weekNum, ref dayOfMonth);
+            }
+
+            InlineKeyboardButton[] NewWeek(int weekNum, ref int dayOfMonth)
+            {
+                var week = new InlineKeyboardButton[7];
+
+                for (int dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
+                {
+                    if ((weekNum == 0 && dayOfWeek < FirstDayOfWeek())
+                       ||
+                       dayOfMonth > lastDayOfMonth
+                    )
+                    {
+                        week[dayOfWeek] = EmptyInlineKeyboardButton!;
+                        continue;
+                    }
+
+                    week[dayOfWeek] = InlineKeyboardButton.WithCallbackData(
+                        dayOfMonth.ToString(),
+                        $"{CalendarPickerCommand} {CalendarPickerSubCommands.SetDate} {currentDate.ToShortDateString()}"
+                    );
+
+                    dayOfMonth++;
+                }
+                return week;
+
+                int FirstDayOfWeek() =>
+                    (7 + (int)firstDayOfMonth.DayOfWeek - (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek) % 7;
+            }
+        }
+
+        InlineKeyboardButton[] GetButtons(DateTime currentDate) =>
+            new[] {
+                InlineKeyboardButton.WithCallbackData("<", $"{CalendarPickerCommand} {CalendarPickerSubCommands.MonthBack} {currentDate.ToShortDateString()}"),
+                EmptyInlineKeyboardButton!,
+                InlineKeyboardButton.WithCallbackData(">", $"{CalendarPickerCommand} {CalendarPickerSubCommands.MonthForward} {currentDate.ToShortDateString()}")
+            };
+
+        var resultButtons = new List<InlineKeyboardButton[]>
+        {
+            GetHeader(currentDate),
+            GetDaysOfWeek().ToArray()
+        };
+        resultButtons.AddRange(GetCalendar(currentDate));
+        resultButtons.Add(GetButtons(currentDate));
+        return new InlineKeyboardMarkup(resultButtons);
     }
 
-    private static class Months
+    private static Dictionary<string, ItemInfo> Months => new()
     {
-        private static ItemInfo January => new("Январь", "Янв");
-        private static ItemInfo February => new("Февраль", "Феб");
-        private static ItemInfo March => new("Март", "Мар");
-        private static ItemInfo April => new("Апрель", "Апр");
-        private static ItemInfo May => new("Май", "Май");
-        private static ItemInfo June => new("Июнь", "Июн");
-        private static ItemInfo July => new("Июль", "Июл");
-        private static ItemInfo August => new("Август", "Авг");
-        private static ItemInfo September => new("Сентябрь", "Сен");
-        private static ItemInfo October => new("Октябрь", "Окт");
-        private static ItemInfo November => new("Ноябрь", "Ноя");
-        private static ItemInfo December => new("Декабрь", "Дек");
-    }
+        { "January", new("Январь", "Янв") },
+        { "February", new("Февраль", "Феб") },
+        { "March", new("Март", "Мар") },
+        { "April", new("Апрель", "Апр") },
+        { "May", new("Май", "Май") },
+        { "June", new("Июнь", "Июн") },
+        { "July", new("Июль", "Июл") },
+        { "August", new("Август", "Авг") },
+        { "September", new("Сентябрь", "Сен") },
+        { "October", new("Октябрь", "Окт") },
+        { "November", new("Ноябрь", "Ноя") },
+        { "December", new("Декабрь", "Дек") }
+    };
 
-    private static Dictionary<DayOfWeek, ItemInfo> DayOfWeeks => new()
+    private static Dictionary<DayOfWeek, ItemInfo> DaysOfWeek => new()
     {
         { DayOfWeek.Monday, new("Понедельник", "Пн") },
         { DayOfWeek.Tuesday, new("Вторник", "Вт") },

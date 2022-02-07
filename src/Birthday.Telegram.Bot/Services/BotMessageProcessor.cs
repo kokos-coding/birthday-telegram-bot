@@ -4,7 +4,6 @@ using Birthday.Telegram.Bot.Services.Abstractions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Birthday.Telegram.Bot.Services;
 
@@ -195,18 +194,11 @@ public class BotMessageProcessor : IBotMessageProcessor
                                                 cancellationToken: cancellationToken);
 
             var keyboard = CalendarPicker.InitializeCalendarPickerKeyboard(DateTime.Now);
-            try{
-            var result = await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
+
+            await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
                                                 text: "Выберете дату своего рождения",
                                                 replyMarkup: keyboard,
                                                 cancellationToken: cancellationToken);
-            }
-            catch(Exception ex)
-            {
-                _logger.LogInformation(ex.Message);
-            }
-
-            var asd = 1+ 1;
         }
     }
 }

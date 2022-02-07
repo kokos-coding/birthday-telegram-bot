@@ -1,3 +1,5 @@
+using System.Globalization;
+using Birthday.Telegram.Bot.Controls;
 using Birthday.Telegram.Bot.Services.Abstractions;
 using MediatR;
 using Telegram.Bot;
@@ -49,10 +51,8 @@ public class BotUpdateService : IBotUpdateService
         {
             UpdateType.MyChatMember => _botChatMemberProcessor.ProcessAsync(update.MyChatMember!, cancellationToken),
             UpdateType.Message => _botMessageProcessor.ProcessAsync(update.Message!, cancellationToken),
-            UpdateType.EditedMessage => _botMessageProcessor.ProcessAsync
-            
-            (update.EditedMessage!, cancellationToken),
-            UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update.CallbackQuery!),
+            UpdateType.EditedMessage => _botMessageProcessor.ProcessAsync(update.EditedMessage!, cancellationToken),
+            UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update.CallbackQuery!, cancellationToken),
             UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
             UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
             
@@ -71,8 +71,16 @@ public class BotUpdateService : IBotUpdateService
     }
 
     // Process Inline Keyboard callback data
-    private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery)
+    private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
+        if(CalendarPicker.IsCalendarPickerCommand(callbackQuery.Data!, CultureInfo.CurrentCulture))
+        {
+            await _botClient.EditMessageReplyMarkupAsync(callbackQuery.Message!.Chat.Id,
+                callbackQuery.Message.MessageId,
+                replyMarkup: CalendarPicker.CalendarPickerProcessor(callbackQuery.Data!),
+                cancellationToken: cancellationToken);
+        }
+        
         await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             text: $"Received {callbackQuery.Data}");
