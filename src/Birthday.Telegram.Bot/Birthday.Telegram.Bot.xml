@@ -54,9 +54,53 @@
             Calendar picker control
             </summary>
         </member>
-        <member name="F:Birthday.Telegram.Bot.Controls.CalendarPicker.MinimalDate">
+        <member name="M:Birthday.Telegram.Bot.Controls.CalendarPicker.IsCalendarPickerCommand(System.String)">
             <summary>
-            Минимально возможная дата
+            Является ли данная команда, командой для работы CalendarPicker контрола
+            </summary>
+            <param name="command">Команда</param>
+            <returns>Флаг результата</returns>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Controls.CalendarPicker.IsCalendarPickerSetDateCommand(System.String)">
+            <summary>
+            Является ли данная команда, командой получения даты
+            </summary>
+            <param name="command">Команда</param>
+            <returns>Флаг результата</returns>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Controls.CalendarPicker.CalendarPickerProcessorResult">
+            <summary>
+            Объект результата выполнения процессора обработки запроса Calendar picker control
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Controls.CalendarPicker.CalendarPickerProcessorResult.ResultType">
+            <summary>
+            Тип результата
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Controls.CalendarPicker.CalendarPickerProcessorResult.KeyboardMarkup">
+            <summary>
+            Либо клавиатура
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Controls.CalendarPicker.CalendarPickerProcessorResult.TargetDate">
+            <summary>
+            Либо установленная дата
+            </summary>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Controls.CalendarPicker.ProcessorResultType">
+            <summary>
+            Тип результата отдаваемого процессором контрола
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Controls.CalendarPicker.ProcessorResultType.Date">
+            <summary>
+            Выбранная дата
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Controls.CalendarPicker.ProcessorResultType.KeyboardMarkup">
+            <summary>
+            Контрол для отображения
             </summary>
         </member>
         <member name="T:Birthday.Telegram.Bot.Helpers.MigrationsHelper">

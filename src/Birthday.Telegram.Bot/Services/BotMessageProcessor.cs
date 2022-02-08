@@ -1,3 +1,4 @@
+using System.Globalization;
 using Birthday.Telegram.Bot.Controls;
 using Birthday.Telegram.Bot.Models;
 using Birthday.Telegram.Bot.Services.Abstractions;
@@ -35,9 +36,9 @@ public class BotMessageProcessor : IBotMessageProcessor
             return Task.CompletedTask;
 
         if (string.IsNullOrWhiteSpace(message.Text))
-            return SendErrorMessageAsync(message.Chat.Id,
-                            "Полученное сообщение пустое... Я не понимаю что вы хотите мне сказать",
-                            cancellationToken);
+            return SendErrorMessageAsync(chatId: message.Chat.Id,
+                            errorMessage: Messages.ErrorMessages.EmptyMessage,
+                            cancellationToken: cancellationToken);
 
         var splittedReceivedText = message.Text!.Split(' ').ToList();
         var receivedCommand = splittedReceivedText.First();
@@ -47,7 +48,9 @@ public class BotMessageProcessor : IBotMessageProcessor
             Constants.BotCommands.Start => SendHelloMessageAsync(message.Chat,
                                                     splittedReceivedText.Skip(1).ToArray(),
                                                     cancellationToken),
-            _ => SendErrorMessageAsync(message.Chat.Id, "Я не распознал выше сообщение\\. Введите /start", cancellationToken)
+            _ => SendErrorMessageAsync(chatId: message.Chat.Id,
+                    errorMessage: Messages.ErrorMessages.MessageCouldNotRecognized, 
+                    cancellationToken: cancellationToken)
         };
 
         return Task.CompletedTask;
@@ -161,14 +164,6 @@ public class BotMessageProcessor : IBotMessageProcessor
         // }
     }
 
-    private Task SendErrorMessageAsync(ChatId chatId, string errorMessage, CancellationToken cancellationToken) =>
-        _telegramBotClient.SendTextMessageAsync(chatId: chatId,
-                                        text: @$"Упс\, произошла непонятка\.
-{errorMessage}",
-                                        parseMode: Messages.ParseMode,
-                                        cancellationToken: cancellationToken);
-
-
     private async Task SendHelloMessageAsync(Chat chatInfo, string[] args, CancellationToken cancellationToken)
     {
         // Проверка, если ID чата больше нуля то тогда это личные сообщения, иначе это групповые чаты
@@ -181,24 +176,53 @@ public class BotMessageProcessor : IBotMessageProcessor
             return;
         }
 
-
         // проверяем что первый аргумент является числом
         if (long.TryParse(args.First(), out var mainChatId))
         {
             var mainChatInfo = await _telegramBotClient.GetChatAsync(chatId: mainChatId,
                                                 cancellationToken: cancellationToken);
+            try
+            {
+                var userInChat = await _telegramBotClient.GetChatMemberAsync(chatId: mainChatId, 
+                                userId: 123456,//chatInfo.Id, 
+                                cancellationToken: cancellationToken);
+            }   
+            catch(Exception ex)
+            {
+                _logger.LogError("User with id {userId} from chat {chatId} not in this chat", ex.Message, mainChatId);
+                await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
+                            text: Messages.ErrorMessages.UserNotInChat,
+                            Messages.ParseMode,
+                            cancellationToken: cancellationToken);
+                return;
+            }                                 
 
+            // Создаем новую запись с пользователем в базе, и связываем его с созданным чатом
+
+            // Отправляем приветственное сообщение
             await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
                                                 text: Messages.MessageForGetBirthdayDate(chatInfo.Username!, mainChatInfo.Title!),
                                                 parseMode: Messages.ParseMode,
                                                 cancellationToken: cancellationToken);
 
-            var keyboard = CalendarPicker.InitializeCalendarPickerKeyboard(DateTime.Now);
+            var keyboard = CalendarPicker.InitializeCalendarPickerKeyboard(DateTime.Now, CultureInfo.CurrentCulture);
 
             await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
                                                 text: "Выберете дату своего рождения",
                                                 replyMarkup: keyboard,
                                                 cancellationToken: cancellationToken);
+            return;
         }
+
+        await SendErrorMessageAsync(chatId: chatInfo.Id,
+                    errorMessage: Messages.ErrorMessages.MessageCouldNotRecognized, 
+                    cancellationToken: cancellationToken);
     }
+
+    private Task SendErrorMessageAsync(ChatId chatId, string errorMessage, CancellationToken cancellationToken) =>
+        _telegramBotClient.SendTextMessageAsync(chatId: chatId,
+                                        text: @$"Упс\, произошла непонятка\.
+{errorMessage}",
+                                        parseMode: Messages.ParseMode,
+                                        cancellationToken: cancellationToken);
 }

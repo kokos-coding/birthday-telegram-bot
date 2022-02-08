@@ -1,5 +1,6 @@
-using System.Globalization;
+using Birthday.Telegram.Bot.ApplicationServices.Commands;
 using Birthday.Telegram.Bot.Controls;
+using Birthday.Telegram.Bot.Models;
 using Birthday.Telegram.Bot.Services.Abstractions;
 using MediatR;
 using Telegram.Bot;
@@ -31,7 +32,7 @@ public class BotUpdateService : IBotUpdateService
     public BotUpdateService(
         ITelegramBotClient botClient,
         IMediator mediator,
-        ILogger<BotUpdateService> logger, 
+        ILogger<BotUpdateService> logger,
         IBotChatMemberProcessor botChatMemberProcessor,
         IBotMessageProcessor botMessageProcessor)
     {
@@ -55,7 +56,7 @@ public class BotUpdateService : IBotUpdateService
             UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update.CallbackQuery!, cancellationToken),
             UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
             UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
-            
+
             //UpdateType
             _ => UnknownUpdateHandlerAsync(update)
         };
@@ -73,14 +74,37 @@ public class BotUpdateService : IBotUpdateService
     // Process Inline Keyboard callback data
     private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
     {
-        if(CalendarPicker.IsCalendarPickerCommand(callbackQuery.Data!, CultureInfo.CurrentCulture))
+        if (CalendarPicker.IsCalendarPickerCommand(callbackQuery.Data!))
         {
-            await _botClient.EditMessageReplyMarkupAsync(callbackQuery.Message!.Chat.Id,
-                callbackQuery.Message.MessageId,
-                replyMarkup: CalendarPicker.CalendarPickerProcessor(callbackQuery.Data!),
-                cancellationToken: cancellationToken);
+            var processorResult = CalendarPicker.CalendarPickerProcessor(callbackQuery.Data!);
+            if (processorResult is null)
+            {
+                await _botClient.DeleteMessageAsync(chatId: callbackQuery.Message!.Chat.Id,
+                    messageId: callbackQuery.Message.MessageId,
+                    cancellationToken: cancellationToken);
+                await SendServerErrorMessage(callbackQuery.Message!.Chat.Id, cancellationToken);
+                return;
+            }
+            switch (processorResult.ResultType)
+            {
+                case CalendarPicker.ProcessorResultType.Date:
+                    var result = await _mediator.Send(new CreateChatMemberCommand()
+                    {
+                        ChatMemberId = callbackQuery.From.Id,
+                        Username = callbackQuery.From.Username,
+                        Birthday = processorResult.TargetDate
+                    }, cancellationToken);
+                    
+                    return;
+                case CalendarPicker.ProcessorResultType.KeyboardMarkup:
+                    await _botClient.EditMessageReplyMarkupAsync(callbackQuery.Message!.Chat.Id,
+                            messageId: callbackQuery.Message.MessageId,
+                            replyMarkup: processorResult.KeyboardMarkup,
+                            cancellationToken: cancellationToken);
+                    return;
+            }
         }
-        
+
         await _botClient.AnswerCallbackQueryAsync(
             callbackQueryId: callbackQuery.Id,
             text: $"Received {callbackQuery.Data}");
@@ -142,4 +166,11 @@ public class BotUpdateService : IBotUpdateService
         _logger.LogInformation("HandleError: {ErrorMessage}", ErrorMessage);
         return Task.CompletedTask;
     }
+
+    private Task SendServerErrorMessage(ChatId chatId, CancellationToken cancellationToken) => 
+            _botClient.SendTextMessageAsync(chatId: chatId,
+                                        text: @$"Упс\, произошла непонятка\.
+{Messages.ErrorMessages.ServerError}",
+                                        parseMode: Messages.ParseMode,
+                                        cancellationToken: cancellationToken);
 }

@@ -78,4 +78,15 @@ public static class Messages
     public static string HelloMessageForNewChatUser(string newUserName, string botName, string mainChatId) => @$"Привет *{newUserName}*\! 
 Твои друзья попросили меня следить за тем, у кого когда день рождение\.
 Чтобы я смог оповещать и о твоем дне рождения перейди\, пожалуйста\, по [этой](https://t.me/{botName}?start={mainChatId}) ссылочке и ответь на парочку вопросов";
+
+    public static class ErrorMessages
+    {
+        public static string MessageCouldNotRecognized => @"Я не распознал выше сообщение\. Введите /start \.";
+
+        public static string EmptyMessage => @"Полученное сообщение пустое\.\.\. Я не понимаю что вы хотите мне сказать\.";
+
+        public static string ServerError => @"Ошибка сервера\.";
+
+        public static string UserNotInChat => @"Извините\, но вы не состоите в том чате\, откуда получили ссылку\. Для продождения нажмите /start \.";
+    }
 }
