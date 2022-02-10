@@ -20,27 +20,31 @@ public class BotUpdateService : IBotUpdateService
 
     private readonly IBotProcessor<ChatMemberUpdated> _botChatMemberProcessor;
     private readonly IBotProcessor<Message> _botMessageProcessor;
+    private readonly IBotProcessor<CallbackQuery> _botCallbackQueryProcessor;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="botClient">Bot client instance</param>
     /// <param name="mediator">Mediator</param>
-    /// <param name="logger">Logger</param>
     /// <param name="botChatMemberProcessor">Instance of processor for chat members</param>
     /// <param name="botMessageProcessor">Instance of processor for messages</param>
+    /// <param name="botCallbackQueryProcessor">Экземпляр обработчика сообщений пришедших с виртуальной клавиатуры</param>
+    /// <param name="logger">Logger</param>
     public BotUpdateService(
         ITelegramBotClient botClient,
         IMediator mediator,
-        ILogger<BotUpdateService> logger,
         IBotProcessor<ChatMemberUpdated> botChatMemberProcessor,
-        IBotProcessor<Message> botMessageProcessor)
+        IBotProcessor<Message> botMessageProcessor, 
+        IBotProcessor<CallbackQuery> botCallbackQueryProcessor,
+        ILogger<BotUpdateService> logger)
     {
         _botClient = botClient;
         _mediator = mediator;
         _logger = logger;
         _botChatMemberProcessor = botChatMemberProcessor;
         _botMessageProcessor = botMessageProcessor;
+        _botCallbackQueryProcessor = botCallbackQueryProcessor;
     }
 
     /// <inheritdoc cref="ProcessUpdateAsync" />
@@ -53,7 +57,7 @@ public class BotUpdateService : IBotUpdateService
             UpdateType.MyChatMember => _botChatMemberProcessor.ProcessAsync(update.MyChatMember!, cancellationToken),
             UpdateType.Message => _botMessageProcessor.ProcessAsync(update.Message!, cancellationToken),
             UpdateType.EditedMessage => _botMessageProcessor.ProcessAsync(update.EditedMessage!, cancellationToken),
-            UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update.CallbackQuery!, cancellationToken),
+            UpdateType.CallbackQuery => _botCallbackQueryProcessor.ProcessAsync(update.CallbackQuery!, cancellationToken),
             UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
             UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
 
@@ -69,49 +73,6 @@ public class BotUpdateService : IBotUpdateService
         {
             await HandleErrorAsync(exception);
         }
-    }
-
-    // Process Inline Keyboard callback data
-    private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
-    {
-        if (CalendarPicker.IsCalendarPickerCommand(callbackQuery.Data!))
-        {
-            var processorResult = CalendarPicker.CalendarPickerProcessor(callbackQuery.Data!);
-            if (processorResult is null)
-            {
-                await _botClient.DeleteMessageAsync(chatId: callbackQuery.Message!.Chat.Id,
-                    messageId: callbackQuery.Message.MessageId,
-                    cancellationToken: cancellationToken);
-                await SendServerErrorMessage(callbackQuery.Message!.Chat.Id, cancellationToken);
-                return;
-            }
-            switch (processorResult.ResultType)
-            {
-                case CalendarPicker.ProcessorResultType.Date:
-                    var result = await _mediator.Send(new CreateChatMemberCommand()
-                    {
-                        ChatMemberId = callbackQuery.From.Id,
-                        Username = callbackQuery.From.Username,
-                        Birthday = processorResult.TargetDate
-                    }, cancellationToken);
-                    
-                    return;
-                case CalendarPicker.ProcessorResultType.KeyboardMarkup:
-                    await _botClient.EditMessageReplyMarkupAsync(callbackQuery.Message!.Chat.Id,
-                            messageId: callbackQuery.Message.MessageId,
-                            replyMarkup: processorResult.KeyboardMarkup,
-                            cancellationToken: cancellationToken);
-                    return;
-            }
-        }
-
-        await _botClient.AnswerCallbackQueryAsync(
-            callbackQueryId: callbackQuery.Id,
-            text: $"Received {callbackQuery.Data}");
-
-        await _botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message!.Chat.Id,
-            text: $"Received {callbackQuery.Data}");
     }
 
     #region Inline Mode
@@ -166,11 +127,4 @@ public class BotUpdateService : IBotUpdateService
         _logger.LogInformation("HandleError: {ErrorMessage}", ErrorMessage);
         return Task.CompletedTask;
     }
-
-    private Task SendServerErrorMessage(ChatId chatId, CancellationToken cancellationToken) => 
-            _botClient.SendTextMessageAsync(chatId: chatId,
-                                        text: @$"Упс\, произошла непонятка\.
-{Messages.ErrorMessages.ServerError}",
-                                        parseMode: Messages.ParseMode,
-                                        cancellationToken: cancellationToken);
 }

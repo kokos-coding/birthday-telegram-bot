@@ -20,7 +20,6 @@ public class CreateChatMemberCommandHandler : BaseHandler<CreateChatMemberComman
     /// <param name="logger">Логгер</param>
     public CreateChatMemberCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateChatMemberCommandHandler> logger) : base(unitOfWork, logger)
     {
-
     }
 
     /// <inheritdoc />
