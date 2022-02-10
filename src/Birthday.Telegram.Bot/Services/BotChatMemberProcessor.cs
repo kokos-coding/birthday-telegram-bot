@@ -99,10 +99,9 @@ public class BotChatMemberProcessor : IBotProcessor<ChatMemberUpdated>
         if (chatInfo.Username != Constants.ChatNameForBirthday)
         {
             // Записать в БД данные о чате
-            await _mediator.Send(new CreateChatCommand()
+            await _mediator.Send(new DeleteChatByChatIdCommand()
             {
-                ChatId = chatInfo.Id,
-                DiscussionChatId = null
+                ChatId = chatInfo.Id
             }, cancellationToken);
         }
         // При удалении нужно вычистить все из бд

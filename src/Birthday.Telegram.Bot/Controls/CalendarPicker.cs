@@ -8,7 +8,7 @@ namespace Birthday.Telegram.Bot.Controls;
 /// </summary>
 public static class CalendarPicker
 {
-    private static CultureInfo DefaultCultureInfo = CultureInfo.InvariantCulture;
+    private static CultureInfo DefaultCultureInfo = CultureInfo.CurrentCulture;
 
     /// <summary>
     /// Является ли данная команда, командой для работы CalendarPicker контрола
@@ -36,7 +36,7 @@ public static class CalendarPicker
     {
         DefaultCultureInfo = cultureInfo;
 
-        return GetCalendarKeyboard(currentDateTime, DefaultCultureInfo);
+        return GetYearsKeyboard(currentDateTime);
     }
 
     /// <summary>
@@ -101,6 +101,8 @@ public static class CalendarPicker
 
     private static InlineKeyboardMarkup GetYearsKeyboard(DateTime centralDate)
     {
+        var keyboardWidth = 5;
+        var keyboardHeigh = 5;
         var nowDate = DateTime.Now;
         bool showLeftArrow = true;
         bool showRightArrow = true;
@@ -109,13 +111,13 @@ public static class CalendarPicker
             centralDate = new DateTime(Constants.MinimalDate.Year, centralDate.Month, centralDate.Day);
             showLeftArrow = false;
         }
-        if (nowDate.Year <= centralDate.Year)
+        if (nowDate.Year - 12 <= centralDate.Year)
         {
-            centralDate = new DateTime(nowDate.Year - 4, centralDate.Month, centralDate.Day);
+            centralDate = new DateTime(nowDate.Year - 12, centralDate.Month, centralDate.Day);
             showRightArrow = false;
         }
 
-        InlineKeyboardButton GetYearKeyBoardButton(DateTime centralDate, int deviation) =>
+        static InlineKeyboardButton GetYearKeyBoardButton(DateTime centralDate, int deviation) =>
             InlineKeyboardButton.WithCallbackData(centralDate.AddYears(deviation).Year.ToString(),
                                 $"{Constants.FullCommands.SetYear} {centralDate.AddYears(deviation).ToShortDateString()}");
 
@@ -138,35 +140,25 @@ public static class CalendarPicker
                     Constants.EmptyInlineKeyboardButton!,
                     Constants.EmptyInlineKeyboardButton!,
             };
-
-
-        var result = new InlineKeyboardMarkup(new[]
+        
+        var square = keyboardHeigh * keyboardWidth;
+        var start = square % 2 == 0 ? 
+                    -(square / 2) - 1 : 
+                    -(square / 2);
+        var keyboard = new List<List<InlineKeyboardButton>>();
+        for(var col = 0; col < keyboardWidth; col++)
         {
-                // First line
-                new []
-                {
-                    GetYearKeyBoardButton(centralDate, -4),
-                    GetYearKeyBoardButton(centralDate, -3),
-                    GetYearKeyBoardButton(centralDate, -2)
-                },
-                // Second line
-                new []
-                {
-                    GetYearKeyBoardButton(centralDate, -1),
-                    GetYearKeyBoardButton(centralDate, 0),
-                    GetYearKeyBoardButton(centralDate, 1)
-                },
-                // Third line
-                new []
-                {
-                    GetYearKeyBoardButton(centralDate, 2),
-                    GetYearKeyBoardButton(centralDate, 3),
-                    GetYearKeyBoardButton(centralDate, 4)
-                },
-                bottomLine
-            });
+            var keyboardRow = new List<InlineKeyboardButton>();
+            for(var row = 0; row < keyboardHeigh; row++)
+            {
+                keyboardRow.Add(GetYearKeyBoardButton(centralDate, start));
+                start++;
+            }
+            keyboard.Add(keyboardRow);
+        }
+        keyboard.Add(bottomLine.ToList());
 
-        return result;
+        return new InlineKeyboardMarkup(keyboard);
     }
 
     private static InlineKeyboardMarkup GetCalendarKeyboard(DateTime currentDate, CultureInfo cultureInfo)

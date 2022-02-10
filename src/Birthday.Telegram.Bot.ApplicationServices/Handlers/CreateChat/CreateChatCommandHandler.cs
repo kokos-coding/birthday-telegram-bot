@@ -6,10 +6,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Birthday.Telegram.Bot.ApplicationServices.Handlers;
 
+/// <summary>
+/// Обработчик события по добавлению новой записи о чате
+/// </summary>
 public class CreateChatCommandHandler : BaseHandler<CreateChatCommand, IdModel<long>, IUnitOfWork>
 {
     private IUnitOfWork UnitOfWork => Service;
 
+    /// <summary>
+    /// Конструктор
+    /// </summary>
+    /// <param name="unitOfWork">Экземпляр единицы работы</param>
+    /// <param name="logger">Логгер</param>
     public CreateChatCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateChatCommandHandler> logger) : base(unitOfWork, logger) 
     {
     }

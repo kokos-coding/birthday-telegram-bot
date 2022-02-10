@@ -184,7 +184,7 @@ public class BotMessageProcessor : IBotProcessor<Message>
             try
             {
                 var userInChat = await _telegramBotClient.GetChatMemberAsync(chatId: mainChatId, 
-                                userId: 123456,//chatInfo.Id, 
+                                userId: chatInfo.Id, 
                                 cancellationToken: cancellationToken);
             }   
             catch(Exception ex)

@@ -6,15 +6,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Birthday.Telegram.Bot.ApplicationServices.Handlers.CreateMember;
 
+/// <summary>
+/// Обработчик команды на событие создание чата
+/// </summary>
 public class CreateChatMemberCommandHandler : BaseHandler<CreateChatMemberCommand, IdModel<long>, IUnitOfWork>
 {
     private IUnitOfWork UnitOfWork => Service;
 
+    /// <summary>
+    /// Конструктор
+    /// </summary>
+    /// <param name="unitOfWork">Экземпляр единицы работы</param>
+    /// <param name="logger">Логгер</param>
     public CreateChatMemberCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateChatMemberCommandHandler> logger) : base(unitOfWork, logger)
     {
 
     }
 
+    /// <inheritdoc />
     public override async Task<IdModel<long>> Handle(CreateChatMemberCommand request, CancellationToken cancellationToken)
     {
         var newChatMember = new ChatMember()
