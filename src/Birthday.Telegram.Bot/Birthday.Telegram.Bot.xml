@@ -68,6 +68,21 @@
             <param name="command">Команда</param>
             <returns>Флаг результата</returns>
         </member>
+        <member name="M:Birthday.Telegram.Bot.Controls.CalendarPicker.InitializeCalendarPickerKeyboard(System.DateTime,System.Globalization.CultureInfo)">
+            <summary>
+            Инициализация контрола с CalendarPicker
+            </summary>
+            <param name="currentDateTime">Текущее дата инициализации</param>
+            <param name="cultureInfo">Текущая культура</param>
+            <returns>Инициализированная клавиатура</returns>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Controls.CalendarPicker.CalendarPickerProcessor(System.String)">
+            <summary>
+            Процессор для обработки запросов адресованных контролу CalendarPicker
+            </summary>
+            <param name="calendarPickerCommand">Команда для обработки</param>
+            <returns>Результат обработки запроса</returns>
+        </member>
         <member name="T:Birthday.Telegram.Bot.Controls.CalendarPicker.CalendarPickerProcessorResult">
             <summary>
             Объект результата выполнения процессора обработки запроса Calendar picker control
@@ -125,33 +140,32 @@
             Update the database
             </summary>
         </member>
-        <member name="T:Birthday.Telegram.Bot.MediatR.Commands.StartCommand">
+        <member name="T:Birthday.Telegram.Bot.Helpers.TextHelper">
             <summary>
-            Start command request
+            Вспомогательный класс для работы с текстом. <br/>
+            Для преобразования в другие форматы текста
             </summary>
         </member>
-        <member name="T:Birthday.Telegram.Bot.MediatR.Handlers.StartCommandHandler">
+        <member name="P:Birthday.Telegram.Bot.Helpers.TextHelper.SpecialSymbols">
             <summary>
-            Handler for processing start command
+            Регулярное выражение для поиска специальных символов
             </summary>
         </member>
-        <member name="M:Birthday.Telegram.Bot.MediatR.Handlers.StartCommandHandler.#ctor(MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.MediatR.Handlers.StartCommandHandler})">
+        <member name="M:Birthday.Telegram.Bot.Helpers.TextHelper.ToMarkdownV2(System.String)">
             <summary>
-            Constructor
+            Перевод текста в MarkdownV2
             </summary>
-            <param name="mediator">IMediatR instance</param>
-            <param name="logger">ILogger instance</param>
-        </member>
-        <member name="M:Birthday.Telegram.Bot.MediatR.Handlers.StartCommandHandler.Handle(Birthday.Telegram.Bot.MediatR.Commands.StartCommand,System.Threading.CancellationToken)">
-            <summary>
-            Handle of request
-            </summary>
-            <param name="request">Request</param>
-            <param name="cancellationToken">Instance of cancellation token</param>
+            <param name="input">Входная строка</param>
+            <returns>Текст в формате MarkdownV2</returns>
         </member>
         <member name="T:Birthday.Telegram.Bot.Models.Constants">
             <summary>
             Class with constants values
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Models.Constants.ChatNameForBirthday">
+            <summary>
+            Название чата по-умолчанию в который будут приглашаться люди для поздравления
             </summary>
         </member>
         <member name="T:Birthday.Telegram.Bot.Models.Constants.BotCommands">
@@ -194,15 +208,14 @@
             Static class with prebuild messages
             </summary>
         </member>
-        <member name="P:Birthday.Telegram.Bot.Models.Messages.SpecialSymbols">
-            <summary>
-            REgex spec symbols
-            </summary>
-            <returns></returns>
-        </member>
         <member name="P:Birthday.Telegram.Bot.Models.Messages.ParseMode">
             <summary>
             Parse mode for all messages
+            </summary>
+        </member>
+        <member name="P:Birthday.Telegram.Bot.Models.Messages.ChatNameForBirthdayMarkdown">
+            <summary>
+            Значение чата ChatNameForBirthday в кодировке MarkdownV2
             </summary>
         </member>
         <member name="M:Birthday.Telegram.Bot.Models.Messages.HelloMessage(System.String)">
@@ -235,6 +248,31 @@
             <param name="botName">Название бота</param>
             <param name="mainChatId">Идентификатор главного чата</param>
             <returns>Приветственное сообщение</returns>
+        </member>
+        <member name="T:Birthday.Telegram.Bot.Models.Messages.ErrorMessages">
+            <summary>
+            Типизированные сообщения об ошибках
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Models.Messages.ErrorMessages.MessageCouldNotRecognized">
+            <summary>
+            Сообщение не удалось распознать
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Models.Messages.ErrorMessages.EmptyMessage">
+            <summary>
+            Пустое сообщение
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Models.Messages.ErrorMessages.ServerError">
+            <summary>
+            Ошибка сервера
+            </summary>
+        </member>
+        <member name="F:Birthday.Telegram.Bot.Models.Messages.ErrorMessages.UserNotInChat">
+            <summary>
+            Данный юзер не принадлежит чату
+            </summary>
         </member>
         <member name="T:Birthday.Telegram.Bot.Models.TypedHttpClientInformation">
             <summary>
@@ -279,16 +317,6 @@
             Build configuration for current project
             </summary>
         </member>
-        <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotChatMemberProcessor">
-            <summary>
-            Processor for chat member updates
-            </summary>
-        </member>
-        <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotMessageProcessor">
-            <summary>
-            Processor for messages
-            </summary>
-        </member>
         <member name="T:Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor`1">
             <summary>
             Process for bot actions
@@ -313,12 +341,20 @@
             <param name="cancellationToken">Cancellation token instance</param>
             <returns>Completed task</returns>
         </member>
+        <member name="T:Birthday.Telegram.Bot.Services.BotCallbackQueryProcessor">
+            <summary>
+            Обработчик на Callback действия пришедшие с клавиатуры
+            </summary>
+        </member>
+        <member name="M:Birthday.Telegram.Bot.Services.BotCallbackQueryProcessor.ProcessAsync(Telegram.Bot.Types.CallbackQuery,System.Threading.CancellationToken)">
+            <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotCallbackQueryProcessor.ProcessAsync(Telegram.Bot.Types.CallbackQuery,System.Threading.CancellationToken)" />
+        </member>
         <member name="T:Birthday.Telegram.Bot.Services.BotChatMemberProcessor">
             <summary>
             Processor for bot chat members
             </summary>
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.#ctor(Telegram.Bot.ITelegramBotClient)">
+        <member name="M:Birthday.Telegram.Bot.Services.BotChatMemberProcessor.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator)">
             <summary>
             Constructor
             </summary>
@@ -370,7 +406,7 @@
         <member name="T:Birthday.Telegram.Bot.Services.BotUpdateService">
             <inheritdoc cref="T:Birthday.Telegram.Bot.Services.Abstractions.IBotUpdateService" />
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotUpdateService},Birthday.Telegram.Bot.Services.Abstractions.IBotChatMemberProcessor,Birthday.Telegram.Bot.Services.Abstractions.IBotMessageProcessor)">
+        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotUpdateService},Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor{Telegram.Bot.Types.ChatMemberUpdated},Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor{Telegram.Bot.Types.Message})">
             <summary>
             Constructor
             </summary>
@@ -500,26 +536,6 @@
             </summary>
             <param name="services">Экземпляр коллекции сервисов типа IServiceCollection</param>
             <returns>Экземпляр коллекции сервисов типа IServiceCollection</returns>
-        </member>
-        <member name="T:DevQuiz.TelegramBot.Models.ApiResults.SetWebHookApiResult">
-            <summary>
-                Set web hook api result model
-            </summary>
-        </member>
-        <member name="P:DevQuiz.TelegramBot.Models.ApiResults.SetWebHookApiResult.Ok">
-            <summary>
-                Set web hook status
-            </summary>
-        </member>
-        <member name="P:DevQuiz.TelegramBot.Models.ApiResults.SetWebHookApiResult.Error_code">
-            <summary>
-                Error code
-            </summary>
-        </member>
-        <member name="P:DevQuiz.TelegramBot.Models.ApiResults.SetWebHookApiResult.Description">
-            <summary>
-            Description message
-            </summary>
         </member>
     </members>
 </doc>

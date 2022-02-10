@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using Birthday.Telegram.Bot.Helpers;
 using Telegram.Bot.Types.Enums;
 
 namespace Birthday.Telegram.Bot.Models;
@@ -9,27 +9,21 @@ namespace Birthday.Telegram.Bot.Models;
 public static class Messages
 {
     /// <summary>
-    /// REgex spec symbols
-    /// </summary>
-    /// <returns></returns>
-    private static Regex SpecialSymbols => new(@"[_*\[\]\(\)~`>#\+-=|{}.,!]", RegexOptions.Compiled);
-
-    private static string ToMarkdownV2(string input) =>
-        SpecialSymbols.Replace(input, "\\$&");
-
-    /// <summary>
     /// Parse mode for all messages
     /// </summary>
     public static ParseMode ParseMode => ParseMode.MarkdownV2;
+    private static string ConvertToDefaultParseMode(string input) => input.ToMarkdownV2();
 
-    public static string ChatNameForBirthday = "birthday_chat";
-    public static string ChatNameForBirthdayMarkdown => ChatNameForBirthday.Replace("_", @"\_");
+    /// <summary>
+    /// Значение чата ChatNameForBirthday в кодировке MarkdownV2
+    /// </summary>
+    private static string ChatNameForBirthdayMarkdown => ConvertToDefaultParseMode(Constants.ChatNameForBirthday);
 
     /// <summary>
     /// Hello message
     /// </summary>
     /// <param name="userName">Message for whom</param>
-    public static string HelloMessage(string userName) => @$"Приветствую тебя, *{ToMarkdownV2(userName)}*\!😎
+    public static string HelloMessage(string userName) => @$"Приветствую тебя, *{ConvertToDefaultParseMode(userName)}*\!😎
 
 Я бот \- помощник по организации поздравлений\.
 Моя задача отслеживать дни рождения участников чата\, и приглашать всех кроме именинника в отдельный чат для обсуждения подарка\.
@@ -39,7 +33,7 @@ public static class Messages
 Алгоритм не сложный\, но нужно сделать все по пунктам\.
 
 ➡️ Добавь меня в ваш основной чат\. Я пришлю приветственное сообщение в котором будет ссылонька\, по ней должны перейти все участники\, и шепнуть свой даты рождения\.
-➡️ Создай отдельный чат с названием ```{ToMarkdownV2(ChatNameForBirthdayMarkdown)}``` и добавь меня туда\. В него я буду приглашать пользователей для обсуждения праздника\.
+➡️ Создай отдельный чат с названием ```{ConvertToDefaultParseMode(ChatNameForBirthdayMarkdown)}``` и добавь меня туда\. В него я буду приглашать пользователей для обсуждения праздника\.
 ➡️ Перешли в этот чат любое сообщение из основного чата\. Это нужно чтобы связать его с основным\.
 
 На этом все\!
@@ -52,8 +46,8 @@ public static class Messages
     /// <param name="userName">Имя пользователя</param>
     /// <param name="fromChatName">Откуда пришел пользователь</param>
     /// <returns>Сообщение</returns>
-    public static string MessageForGetBirthdayDate(string userName, string fromChatName) => @$"Привет *{ToMarkdownV2(userName)}*\.
-Чтобы пользователи чата *{ToMarkdownV2(fromChatName)}* смогли поздравлять тебя мне нужно шепнуть дату твоего дня рождения\.";
+    public static string MessageForGetBirthdayDate(string userName, string fromChatName) => @$"Привет *{ConvertToDefaultParseMode(userName)}*\.
+Чтобы пользователи чата *{ConvertToDefaultParseMode(fromChatName)}* смогли поздравлять тебя мне нужно шепнуть дату твоего дня рождения\.";
 
     /// <summary>
     /// Приветственное сообщение от бота, когда он входит в главный чат
@@ -79,14 +73,29 @@ public static class Messages
 Твои друзья попросили меня следить за тем, у кого когда день рождение\.
 Чтобы я смог оповещать и о твоем дне рождения перейди\, пожалуйста\, по [этой](https://t.me/{botName}?start={mainChatId}) ссылочке и ответь на парочку вопросов";
 
+    /// <summary>
+    /// Типизированные сообщения об ошибках
+    /// </summary>
     public static class ErrorMessages
     {
-        public static string MessageCouldNotRecognized => @"Я не распознал выше сообщение\. Введите /start \.";
+        /// <summary>
+        /// Сообщение не удалось распознать
+        /// </summary>
+        public const string MessageCouldNotRecognized = @"Я не распознал выше сообщение\. Введите /start \.";
 
-        public static string EmptyMessage => @"Полученное сообщение пустое\.\.\. Я не понимаю что вы хотите мне сказать\.";
+        /// <summary>
+        /// Пустое сообщение
+        /// </summary>
+        public const string EmptyMessage = @"Полученное сообщение пустое\.\.\. Я не понимаю что вы хотите мне сказать\.";
 
-        public static string ServerError => @"Ошибка сервера\.";
+        /// <summary>
+        /// Ошибка сервера
+        /// </summary>
+        public const string ServerError = @"Ошибка сервера\.";
 
-        public static string UserNotInChat => @"Извините\, но вы не состоите в том чате\, откуда получили ссылку\. Для продождения нажмите /start \.";
+        /// <summary>
+        /// Данный юзер не принадлежит чату
+        /// </summary>
+        public const string UserNotInChat = @"Извините\, но вы не состоите в том чате\, откуда получили ссылку\. Для продождения нажмите /start \.";
     }
 }

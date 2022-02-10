@@ -1,5 +1,7 @@
 using Birthday.Telegram.Bot.Models;
 using Birthday.Telegram.Bot.Services.Abstractions;
+using Birthday.Telegram.Bot.ApplicationServices.Commands;
+using MediatR;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -9,16 +11,18 @@ namespace Birthday.Telegram.Bot.Services;
 /// <summary>
 /// Processor for bot chat members
 /// </summary>
-public class BotChatMemberProcessor : IBotChatMemberProcessor
+public class BotChatMemberProcessor : IBotProcessor<ChatMemberUpdated>
 {
     private readonly ITelegramBotClient _telegramBotClient;
+    private readonly IMediator _mediator;
 
     /// <summary>
     /// Constructor
     /// </summary>
-    public BotChatMemberProcessor(ITelegramBotClient telegramBotClient)
+    public BotChatMemberProcessor(ITelegramBotClient telegramBotClient, IMediator mediator)
     {
         _telegramBotClient = telegramBotClient;
+        _mediator = mediator;
     }
 
     /// <inheritdoc cref="ProcessAsync"/>
@@ -31,11 +35,18 @@ public class BotChatMemberProcessor : IBotChatMemberProcessor
         {
             var processUpdate = processStatus switch
             {
-                ChatMemberStatus.Member => AddBotToChatAction(chatInfo: action.Chat, 
-                    botInfo: botInfo, 
+                ChatMemberStatus.Member => AddBotToChatAction(chatInfo: action.Chat,
+                    botInfo: botInfo,
                     cancellationToken: cancellationToken),
-                ChatMemberStatus.Left => RemoveBotFromChatAction(chatInfo: action.Chat, 
-                    cancellationToken: cancellationToken)
+                ChatMemberStatus.Left => RemoveBotFromChatAction(chatInfo: action.Chat,
+                    cancellationToken: cancellationToken),
+
+                ChatMemberStatus.Creator => throw new NotImplementedException(),
+                ChatMemberStatus.Administrator => throw new NotImplementedException(),
+                ChatMemberStatus.Kicked => RemoveBotFromChatAction(chatInfo: action.Chat,
+                    cancellationToken: cancellationToken),
+                ChatMemberStatus.Restricted => throw new NotImplementedException(),
+                _ => throw new NotImplementedException()
             };
             await processUpdate;
         }
@@ -43,12 +54,19 @@ public class BotChatMemberProcessor : IBotChatMemberProcessor
         {
             var processUpdate = processStatus switch
             {
-                ChatMemberStatus.Member => AddNewMemberChatAction(chatInfo: action.Chat, 
+                ChatMemberStatus.Member => AddNewMemberChatAction(chatInfo: action.Chat,
                     botInfo: botInfo,
-                    newUser: action.NewChatMember.User, 
+                    newUser: action.NewChatMember.User,
                     cancellationToken: cancellationToken),
-                ChatMemberStatus.Left => RemoveMemberFromChatAction(chatInfo: action.Chat, 
-                    cancellationToken: cancellationToken)
+                ChatMemberStatus.Left => RemoveMemberFromChatAction(chatInfo: action.Chat,
+                    cancellationToken: cancellationToken),
+
+                ChatMemberStatus.Creator => throw new NotImplementedException(),
+                ChatMemberStatus.Administrator => throw new NotImplementedException(),
+                ChatMemberStatus.Kicked => RemoveMemberFromChatAction(chatInfo: action.Chat,
+                    cancellationToken: cancellationToken),
+                ChatMemberStatus.Restricted => throw new NotImplementedException(),
+                _ => throw new NotImplementedException()
             };
             await processUpdate;
         }
@@ -56,10 +74,18 @@ public class BotChatMemberProcessor : IBotChatMemberProcessor
 
     private async Task AddBotToChatAction(Chat chatInfo, User botInfo, CancellationToken cancellationToken)
     {
-        // Отправить приветственное сообщение
-        await SendHelloMessageFromBotToChat(chatInfo, botInfo, cancellationToken);
-        // Записать в БД данные о чате
-        // Связать данные о чате с пользователями
+        if (chatInfo.Username != Constants.ChatNameForBirthday)
+        {
+            // Записать в БД данные о чате
+            await _mediator.Send(new CreateChatCommand()
+            {
+                ChatId = chatInfo.Id,
+                DiscussionChatId = null
+            }, cancellationToken);
+            // Отправить приветственное сообщение
+            await SendHelloMessageFromBotToChat(chatInfo, botInfo, cancellationToken);
+        }
+        return;
     }
 
     /// <summary>
@@ -68,11 +94,19 @@ public class BotChatMemberProcessor : IBotChatMemberProcessor
     /// <param name="chatInfo">Информация о чате из которого удалили бота</param>
     /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Задача</returns>
-    private Task RemoveBotFromChatAction(Chat chatInfo, CancellationToken cancellationToken)
+    private async Task RemoveBotFromChatAction(Chat chatInfo, CancellationToken cancellationToken)
     {
+        if (chatInfo.Username != Constants.ChatNameForBirthday)
+        {
+            // Записать в БД данные о чате
+            await _mediator.Send(new CreateChatCommand()
+            {
+                ChatId = chatInfo.Id,
+                DiscussionChatId = null
+            }, cancellationToken);
+        }
         // При удалении нужно вычистить все из бд
-
-        return Task.CompletedTask;
+        return;
     }
 
     /// <summary>
@@ -86,9 +120,9 @@ public class BotChatMemberProcessor : IBotChatMemberProcessor
     private async Task AddNewMemberChatAction(Chat chatInfo, User botInfo, User newUser, CancellationToken cancellationToken)
     {
         // Приветствуем нового пользователя чата
-        await SendHelloMessageToNewChatMember(chatInfo: chatInfo, 
-            newUser: newUser, 
-            botInfo: botInfo, 
+        await SendHelloMessageToNewChatMember(chatInfo: chatInfo,
+            newUser: newUser,
+            botInfo: botInfo,
             cancellationToken: cancellationToken);
         // Записываем данные о пользователе в БД и связываем его с чатом
     }

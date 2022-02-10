@@ -18,8 +18,8 @@ public class BotUpdateService : IBotUpdateService
     private readonly ITelegramBotClient _botClient;
     private readonly IMediator _mediator;
 
-    private readonly IBotChatMemberProcessor _botChatMemberProcessor;
-    private readonly IBotMessageProcessor _botMessageProcessor;
+    private readonly IBotProcessor<ChatMemberUpdated> _botChatMemberProcessor;
+    private readonly IBotProcessor<Message> _botMessageProcessor;
 
     /// <summary>
     /// Constructor
@@ -33,8 +33,8 @@ public class BotUpdateService : IBotUpdateService
         ITelegramBotClient botClient,
         IMediator mediator,
         ILogger<BotUpdateService> logger,
-        IBotChatMemberProcessor botChatMemberProcessor,
-        IBotMessageProcessor botMessageProcessor)
+        IBotProcessor<ChatMemberUpdated> botChatMemberProcessor,
+        IBotProcessor<Message> botMessageProcessor)
     {
         _botClient = botClient;
         _mediator = mediator;

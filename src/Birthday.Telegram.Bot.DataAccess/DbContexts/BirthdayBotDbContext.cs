@@ -37,16 +37,40 @@ namespace Birthday.Telegram.Bot.DataAccess.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .Entity<ChatMember>()
-                .ToTable("chat_member");
+                .Entity<ChatMember>(opt =>
+                {
+                    opt.ToTable("chat_member");
+                    opt.HasKey(p => p.Id);
+                    opt.Property(p => p.Id).HasColumnName("id");
+                    opt.Property(p => p.MemberId).HasColumnName("member_id");
+                    opt.Property(p => p.Username).HasColumnName("username");
+                    opt.Property(p => p.BirthDay).HasColumnName("birth_day");
+                });
 
             modelBuilder
-                .Entity<Chat>()
-                .ToTable("group_chat");
+                .Entity<Chat>(opt =>
+                {
+                    opt.ToTable("group_chat");
+                    opt.HasKey(p => p.Id);
+                    opt.Property(p => p.Id).HasColumnName("id");
+                    opt.Property(p => p.ChatId).HasColumnName("chat_id");
+                    opt.Property(p => p.DiscussionChatId).HasColumnName("discussion_chat_id");
+                });
 
             modelBuilder
-                .Entity<ChatChatMember>()
-                .ToTable("group_chat_chat_member");
+                .Entity<ChatChatMember>(opt =>
+                {
+                    opt.ToTable("chats_chat_members");
+                    opt.HasOne(p => p.Chat)
+                        .WithMany(p => p.GroupChatChatMembers)
+                        .HasForeignKey(p => p.ChatId);
+                    opt.HasOne(p => p.ChatMember)
+                        .WithMany(p => p.GroupChatChatMembers)
+                        .HasForeignKey(p => p.MemberId);
+
+                    opt.Property(p => p.ChatId).HasColumnName("chat_id");
+                    opt.Property(p => p.MemberId).HasColumnName("member_id");
+                });
         }
     }
 }

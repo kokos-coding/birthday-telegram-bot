@@ -11,7 +11,7 @@ namespace Birthday.Telegram.Bot.Services;
 /// <summary>
 /// Processor for bot massages
 /// </summary>
-public class BotMessageProcessor : IBotMessageProcessor
+public class BotMessageProcessor : IBotProcessor<Message>
 {
     private readonly ITelegramBotClient _telegramBotClient;
     private readonly ILogger<BotMessageProcessor> _logger;

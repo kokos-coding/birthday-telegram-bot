@@ -3,8 +3,7 @@ using Birthday.Telegram.Bot.Models;
 using Birthday.Telegram.Bot.Services;
 using Birthday.Telegram.Bot.Services.Abstractions;
 using Telegram.Bot;
-using FluentMigrator.Runner;
-using System.Reflection;
+using Telegram.Bot.Types;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -68,8 +67,9 @@ public static class ServiceCollectionsExtensions
         services.AddApplicationServices();
         services.AddScoped<IBotUpdateService, BotUpdateService>();
 
-        services.AddScoped<IBotChatMemberProcessor, BotChatMemberProcessor>();
-        services.AddScoped<IBotMessageProcessor, BotMessageProcessor>();
+        services.AddScoped<IBotProcessor<ChatMemberUpdated>, BotChatMemberProcessor>();
+        services.AddScoped<IBotProcessor<Message>, BotMessageProcessor>();
+        services.AddScoped<IBotProcessor<CallbackQuery>, BotCallbackQueryProcessor>();
 
         return services;
     }

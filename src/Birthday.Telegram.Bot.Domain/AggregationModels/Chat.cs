@@ -18,7 +18,7 @@ public class Chat : IIdModel<long>
     /// <summary>
     /// Discussion chat id
     /// </summary>
-    public long DiscussionChatId { get; set; }
+    public long? DiscussionChatId { get; set; }
 
     /// <summary>
     /// Link to main chat members

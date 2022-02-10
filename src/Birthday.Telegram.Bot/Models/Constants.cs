@@ -6,6 +6,11 @@ namespace Birthday.Telegram.Bot.Models;
 public static class Constants
 {
     /// <summary>
+    /// Название чата по-умолчанию в который будут приглашаться люди для поздравления
+    /// </summary>
+    public const string ChatNameForBirthday = "birthday_chat";
+
+    /// <summary>
     /// Bot message commands constants
     /// </summary>
     public static class BotCommands

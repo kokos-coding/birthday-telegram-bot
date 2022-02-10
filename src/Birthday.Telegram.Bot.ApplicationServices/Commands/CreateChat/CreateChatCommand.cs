@@ -3,6 +3,9 @@ using MediatR;
 
 namespace Birthday.Telegram.Bot.ApplicationServices.Commands;
 
+/// <summary>
+/// Команда для создания записи о новом чате
+/// </summary>
 public class CreateChatCommand : IRequest<IdModel<long>>
 {
     /// <summary>
@@ -13,5 +16,5 @@ public class CreateChatCommand : IRequest<IdModel<long>>
     /// <summary>
     /// Discussion chat id
     /// </summary>
-    public long DiscussionChatId { get; set; }
+    public long? DiscussionChatId { get; set; }
 }
