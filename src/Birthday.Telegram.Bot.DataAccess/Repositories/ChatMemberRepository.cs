@@ -51,8 +51,8 @@ public class ChatMemberRepository : IChatMemberRepository
         _dbContext.Remove(chatMemberInDb);
     }
 
-    /// <inheritdoc cref="GetByChatMemberId" />
-    public Task<ChatMember?> GetByChatMemberId(long chatMemberId, CancellationToken cancellationToken) => 
+    /// <inheritdoc cref="GetByChatMemberIdAsync" />
+    public Task<ChatMember?> GetByChatMemberIdAsync(long chatMemberId, CancellationToken cancellationToken) => 
         _dbContext.ChatMembers
             .Include(it => it.GroupChatChatMembers)
             .ThenInclude(it => it.Chat)

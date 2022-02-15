@@ -1,4 +1,5 @@
 using MediatR;
+using Birthday.Telegram.Bot.ApplicationServices.Handlers;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

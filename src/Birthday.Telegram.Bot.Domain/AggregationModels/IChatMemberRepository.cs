@@ -40,5 +40,5 @@ public interface IChatMemberRepository
     /// <param name="chatMemberId">Chat member i for search</param>
     /// <param name="cancellationToken">Instance of Cancellation token</param>
     /// <returns>Information about chat member</returns>
-    Task<ChatMember?> GetByChatMemberId(long chatMemberId, CancellationToken cancellationToken);
+    Task<ChatMember?> GetByChatMemberIdAsync(long chatMemberId, CancellationToken cancellationToken);
 }

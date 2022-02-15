@@ -346,6 +346,14 @@
             Обработчик на Callback действия пришедшие с клавиатуры
             </summary>
         </member>
+        <member name="M:Birthday.Telegram.Bot.Services.BotCallbackQueryProcessor.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotCallbackQueryProcessor})">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="botClient">Экземпляр клиента телеграм бота</param>
+            <param name="mediator">Экземпляр медиатора</param>
+            <param name="logger">Экземпляр логгера</param>
+        </member>
         <member name="M:Birthday.Telegram.Bot.Services.BotCallbackQueryProcessor.ProcessAsync(Telegram.Bot.Types.CallbackQuery,System.Threading.CancellationToken)">
             <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotCallbackQueryProcessor.ProcessAsync(Telegram.Bot.Types.CallbackQuery,System.Threading.CancellationToken)" />
         </member>
@@ -393,12 +401,13 @@
             Processor for bot massages
             </summary>
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotMessageProcessor.#ctor(Telegram.Bot.ITelegramBotClient,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotMessageProcessor})">
+        <member name="M:Birthday.Telegram.Bot.Services.BotMessageProcessor.#ctor(Telegram.Bot.ITelegramBotClient,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotMessageProcessor},MediatR.IMediator,Birthday.Telegram.Bot.Domain.Abstractions.IUnitOfWork)">
             <summary>
             Constructor
             </summary>
             <param name="telegramBotClient">Instance of telegram bot client</param>
             <param name="logger">Instance of Logger</param>
+            <param name="mediator">Instance of mediator</param>
         </member>
         <member name="M:Birthday.Telegram.Bot.Services.BotMessageProcessor.ProcessAsync(Telegram.Bot.Types.Message,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -406,15 +415,16 @@
         <member name="T:Birthday.Telegram.Bot.Services.BotUpdateService">
             <inheritdoc cref="T:Birthday.Telegram.Bot.Services.Abstractions.IBotUpdateService" />
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotUpdateService},Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor{Telegram.Bot.Types.ChatMemberUpdated},Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor{Telegram.Bot.Types.Message})">
+        <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.#ctor(Telegram.Bot.ITelegramBotClient,MediatR.IMediator,Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor{Telegram.Bot.Types.ChatMemberUpdated},Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor{Telegram.Bot.Types.Message},Birthday.Telegram.Bot.Services.Abstractions.IBotProcessor{Telegram.Bot.Types.CallbackQuery},Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotUpdateService})">
             <summary>
             Constructor
             </summary>
             <param name="botClient">Bot client instance</param>
             <param name="mediator">Mediator</param>
-            <param name="logger">Logger</param>
             <param name="botChatMemberProcessor">Instance of processor for chat members</param>
             <param name="botMessageProcessor">Instance of processor for messages</param>
+            <param name="botCallbackQueryProcessor">Экземпляр обработчика сообщений пришедших с виртуальной клавиатуры</param>
+            <param name="logger">Logger</param>
         </member>
         <member name="M:Birthday.Telegram.Bot.Services.BotUpdateService.ProcessUpdateAsync(Telegram.Bot.Types.Update,System.Threading.CancellationToken)">
             <inheritdoc cref="M:Birthday.Telegram.Bot.Services.BotUpdateService.ProcessUpdateAsync(Telegram.Bot.Types.Update,System.Threading.CancellationToken)" />

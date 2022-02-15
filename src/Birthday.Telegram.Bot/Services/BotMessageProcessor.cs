@@ -2,9 +2,14 @@ using System.Globalization;
 using Birthday.Telegram.Bot.Controls;
 using Birthday.Telegram.Bot.Models;
 using Birthday.Telegram.Bot.Services.Abstractions;
+using Birthday.Telegram.Bot.ApplicationServices.Queries;
+using Birthday.Telegram.Bot.ApplicationServices.Commands;
+using MediatR;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Birthday.Telegram.Bot.Domain.Exceptions;
+using Birthday.Telegram.Bot.Domain.Abstractions;
 
 namespace Birthday.Telegram.Bot.Services;
 
@@ -14,6 +19,7 @@ namespace Birthday.Telegram.Bot.Services;
 public class BotMessageProcessor : IBotProcessor<Message>
 {
     private readonly ITelegramBotClient _telegramBotClient;
+    private readonly IMediator _mediator;
     private readonly ILogger<BotMessageProcessor> _logger;
 
     /// <summary>
@@ -21,11 +27,16 @@ public class BotMessageProcessor : IBotProcessor<Message>
     /// </summary>
     /// <param name="telegramBotClient">Instance of telegram bot client</param>
     /// <param name="logger">Instance of Logger</param>
+    /// <param name="mediator">Instance of mediator</param>
     public BotMessageProcessor(ITelegramBotClient telegramBotClient,
-        ILogger<BotMessageProcessor> logger)
+        ILogger<BotMessageProcessor> logger,
+        IMediator mediator,
+        IUnitOfWork unitOfWork)
     {
         _telegramBotClient = telegramBotClient;
         _logger = logger;
+        var s = unitOfWork;
+        _mediator = mediator;
     }
 
     /// <inheritdoc />
@@ -49,119 +60,11 @@ public class BotMessageProcessor : IBotProcessor<Message>
                                                     splittedReceivedText.Skip(1).ToArray(),
                                                     cancellationToken),
             _ => SendErrorMessageAsync(chatId: message.Chat.Id,
-                    errorMessage: Messages.ErrorMessages.MessageCouldNotRecognized, 
+                    errorMessage: Messages.ErrorMessages.MessageCouldNotRecognized,
                     cancellationToken: cancellationToken)
         };
 
         return Task.CompletedTask;
-        //     var action = message.Text!.Split(' ')[0] switch
-        //     {
-        //         "/inline" => SendInlineKeyboard(_botClient, message),
-        //         "/keyboard" => SendReplyKeyboard(_botClient, message),
-        //         "/remove" => RemoveKeyboard(_botClient, message),
-        //         "/photo" => SendFile(_botClient, message),
-        //         "/request" => RequestContactAndLocation(_botClient, message),
-        //         _ => Usage(_botClient, message)
-        //     };
-        //     Message sentMessage = await action;
-        //     _logger.LogInformation("The message was sent with id: {sentMessageId}", sentMessage.MessageId);
-
-        //     // Send inline keyboard
-        //     // You can process responses in BotOnCallbackQueryReceived handler
-        //     static async Task<Message> SendInlineKeyboard(ITelegramBotClient bot, Message message)
-        //     {
-        //         await bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
-
-        //         // Simulate longer running task
-        //         await Task.Delay(500);
-
-        //         InlineKeyboardMarkup inlineKeyboard = new(
-        //             new[]
-        //             {
-        //                 // first row
-        //                 new []
-        //                 {
-        //                     InlineKeyboardButton.WithCallbackData("1.1", "11"),
-        //                     InlineKeyboardButton.WithCallbackData("1.2", "12"),
-        //                 },
-        //                 // second row
-        //                 new []
-        //                 {
-        //                     InlineKeyboardButton.WithCallbackData("2.1", "21"),
-        //                     InlineKeyboardButton.WithCallbackData("2.2", "22"),
-        //                 },
-        //             });
-
-        //         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-        //                                               text: "Choose",
-        //                                               replyMarkup: inlineKeyboard);
-        //     }
-
-        //     static async Task<Message> SendReplyKeyboard(ITelegramBotClient bot, Message message)
-        //     {
-        //         ReplyKeyboardMarkup replyKeyboardMarkup = new(
-        //             new[]
-        //             {
-        //                     new KeyboardButton[] { "1.1", "1.2" },
-        //                     new KeyboardButton[] { "2.1", "2.2" },
-        //             })
-        //         {
-        //             ResizeKeyboard = true
-        //         };
-
-        //         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-        //                                               text: "Choose",
-        //                                               replyMarkup: replyKeyboardMarkup);
-        //     }
-
-        //     static async Task<Message> RemoveKeyboard(ITelegramBotClient bot, Message message)
-        //     {
-        //         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-        //                                               text: "Removing keyboard",
-        //                                               replyMarkup: new ReplyKeyboardRemove());
-        //     }
-
-        //     static async Task<Message> SendFile(ITelegramBotClient bot, Message message)
-        //     {
-        //         await bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
-
-        //         const string filePath = @"Files/tux.png";
-        //         using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        //         var fileName = filePath.Split(Path.DirectorySeparatorChar).Last();
-
-        //         return await bot.SendPhotoAsync(chatId: message.Chat.Id,
-        //                                         photo: new InputOnlineFile(fileStream, fileName),
-        //                                         caption: "Nice Picture");
-        //     }
-
-        //     static async Task<Message> RequestContactAndLocation(ITelegramBotClient bot, Message message)
-        //     {
-        //         ReplyKeyboardMarkup RequestReplyKeyboard = new(
-        //             new[]
-        //             {
-        //                 KeyboardButton.WithRequestLocation("Location"),
-        //                 KeyboardButton.WithRequestContact("Contact"),
-        //             });
-
-        //         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-        //                                               text: "Who or Where are you?",
-        //                                               replyMarkup: RequestReplyKeyboard);
-        //     }
-
-        //     static async Task<Message> Usage(ITelegramBotClient bot, Message message)
-        //     {
-        //         const string usage = "Usage:\n" +
-        //                              "/inline   - send inline keyboard\n" +
-        //                              "/keyboard - send custom keyboard\n" +
-        //                              "/remove   - remove custom keyboard\n" +
-        //                              "/photo    - send a photo\n" +
-        //                              "/request  - request location or contact";
-
-        //         return await bot.SendTextMessageAsync(chatId: message.Chat.Id,
-        //                                               text: usage,
-        //                                               replyMarkup: new ReplyKeyboardRemove());
-        //     }
-        // }
     }
 
     private async Task SendHelloMessageAsync(Chat chatInfo, string[] args, CancellationToken cancellationToken)
@@ -183,21 +86,46 @@ public class BotMessageProcessor : IBotProcessor<Message>
                                                 cancellationToken: cancellationToken);
             try
             {
-                var userInChat = await _telegramBotClient.GetChatMemberAsync(chatId: mainChatId, 
-                                userId: chatInfo.Id, 
+                var userInChat = await _telegramBotClient.GetChatMemberAsync(chatId: mainChatId,
+                                userId: chatInfo.Id,
                                 cancellationToken: cancellationToken);
-            }   
-            catch(Exception ex)
+                var userInDb = await _mediator.Send(new GetMemberByMemberIdQuery()
+                {
+                    MemberId = userInChat.User.Id
+                }, cancellationToken);
+
+                if(userInDb.BirthDay is not null)
+                {
+                    await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
+                                                text: @$"И снова здравствуйте\, {chatInfo.Username}\!
+У меня уже есть все данные о Вас\, поэтому уже не нужно снова вводить свою дату рождения\.",
+                                                parseMode: Messages.ParseMode,
+                                                cancellationToken: cancellationToken);
+                return;
+                }
+            }
+            catch (EntityNotFoundException ex)
             {
-                _logger.LogError("User with id {userId} from chat {chatId} not in this chat", ex.Message, mainChatId);
+                _logger.LogInformation("User with id {memberId} not found in store, start create it. Error message {exception}", chatInfo.Id, ex);
+                await _mediator.Send(new CreateChatMemberCommand()
+                {
+                    ChatMemberId = chatInfo.Id,
+                    Username = chatInfo.Username,
+                    Birthday = null,
+                }, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("User with id {userId} from chat {chatId} not in this chat. Exception: {exception}", 
+                    chatInfo.Id, 
+                    mainChatId, 
+                    ex.Message);
                 await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
                             text: Messages.ErrorMessages.UserNotInChat,
                             Messages.ParseMode,
                             cancellationToken: cancellationToken);
                 return;
-            }                                 
-
-            // Создаем новую запись с пользователем в базе, и связываем его с созданным чатом
+            }
 
             // Отправляем приветственное сообщение
             await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
@@ -215,7 +143,7 @@ public class BotMessageProcessor : IBotProcessor<Message>
         }
 
         await SendErrorMessageAsync(chatId: chatInfo.Id,
-                    errorMessage: Messages.ErrorMessages.MessageCouldNotRecognized, 
+                    errorMessage: Messages.ErrorMessages.MessageCouldNotRecognized,
                     cancellationToken: cancellationToken);
     }
 

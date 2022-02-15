@@ -49,11 +49,10 @@ public class BotCallbackQueryProcessor : IBotProcessor<CallbackQuery>
             switch (processorResult.ResultType)
             {
                 case CalendarPicker.ProcessorResultType.Date:
-                    var result = await _mediator.Send(new CreateChatMemberCommand()
+                    var result = await _mediator.Send(new SetChatMemberBirthdayCommand()
                     {
                         ChatMemberId = callbackQuery.From.Id,
-                        Username = callbackQuery.From.Username,
-                        Birthday = processorResult.TargetDate
+                        Birthday = processorResult.TargetDate.Value
                     }, cancellationToken);
 
                     return;
