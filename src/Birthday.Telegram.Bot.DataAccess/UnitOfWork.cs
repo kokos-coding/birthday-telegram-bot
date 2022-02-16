@@ -44,5 +44,6 @@ public class UnitOfWork : IUnitOfWork
         if(_dbContextTransaction is null)
             throw new Exception("Transaction is not started. Please before commit changes start transaction");
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.Database.CommitTransactionAsync(cancellationToken);
     }
 }

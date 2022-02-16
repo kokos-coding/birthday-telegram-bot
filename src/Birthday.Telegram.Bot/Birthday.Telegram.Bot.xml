@@ -401,7 +401,7 @@
             Processor for bot massages
             </summary>
         </member>
-        <member name="M:Birthday.Telegram.Bot.Services.BotMessageProcessor.#ctor(Telegram.Bot.ITelegramBotClient,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotMessageProcessor},MediatR.IMediator,Birthday.Telegram.Bot.Domain.Abstractions.IUnitOfWork)">
+        <member name="M:Birthday.Telegram.Bot.Services.BotMessageProcessor.#ctor(Telegram.Bot.ITelegramBotClient,Microsoft.Extensions.Logging.ILogger{Birthday.Telegram.Bot.Services.BotMessageProcessor},MediatR.IMediator)">
             <summary>
             Constructor
             </summary>

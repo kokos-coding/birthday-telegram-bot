@@ -30,12 +30,10 @@ public class BotMessageProcessor : IBotProcessor<Message>
     /// <param name="mediator">Instance of mediator</param>
     public BotMessageProcessor(ITelegramBotClient telegramBotClient,
         ILogger<BotMessageProcessor> logger,
-        IMediator mediator,
-        IUnitOfWork unitOfWork)
+        IMediator mediator)
     {
         _telegramBotClient = telegramBotClient;
         _logger = logger;
-        var s = unitOfWork;
         _mediator = mediator;
     }
 
@@ -64,7 +62,7 @@ public class BotMessageProcessor : IBotProcessor<Message>
                     cancellationToken: cancellationToken)
         };
 
-        return Task.CompletedTask;
+        return action;
     }
 
     private async Task SendHelloMessageAsync(Chat chatInfo, string[] args, CancellationToken cancellationToken)

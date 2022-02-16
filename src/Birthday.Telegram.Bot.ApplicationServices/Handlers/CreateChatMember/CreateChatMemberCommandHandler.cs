@@ -32,8 +32,8 @@ public class CreateChatMemberCommandHandler : BaseHandler<CreateChatMemberComman
             Username = request.Username,
             BirthDay = request.Birthday
         };
-        var result = await UnitOfWork.ChatMemberRepository.CreateAsync(newChatMember, cancellationToken);
         await UnitOfWork.StartTransactionAsync(cancellationToken);
+        var result = await UnitOfWork.ChatMemberRepository.CreateAsync(newChatMember, cancellationToken);
 
         await UnitOfWork.CommitAsync(cancellationToken);
         return new IdModel<long>() { Id = result };
