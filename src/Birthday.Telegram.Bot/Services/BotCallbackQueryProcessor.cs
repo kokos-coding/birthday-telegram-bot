@@ -49,11 +49,21 @@ public class BotCallbackQueryProcessor : IBotProcessor<CallbackQuery>
             switch (processorResult.ResultType)
             {
                 case CalendarPicker.ProcessorResultType.Date:
+                    // Добавляем дату рождения пользователю
                     var result = await _mediator.Send(new SetChatMemberBirthdayCommand()
                     {
                         ChatMemberId = callbackQuery.From.Id,
                         Birthday = processorResult.TargetDate.Value
                     }, cancellationToken);
+                    // Удаляем клавиатуру
+                    await _botClient.DeleteMessageAsync(chatId: callbackQuery.Message!.Chat.Id,
+                        messageId: callbackQuery.Message.MessageId,
+                        cancellationToken: cancellationToken);
+                    // Пишем сообщение о том, что дата рождения сохранена. И что можно дальше работать
+                    await _botClient.SendTextMessageAsync(chatId: callbackQuery.Message!.Chat.Id,
+                        text: Messages.MessageAfterSaveBirthdayDate(),
+                        parseMode: Messages.ParseMode,
+                        cancellationToken: cancellationToken);
 
                     return;
                 case CalendarPicker.ProcessorResultType.KeyboardMarkup:

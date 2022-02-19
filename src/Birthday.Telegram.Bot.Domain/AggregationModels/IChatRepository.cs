@@ -40,5 +40,13 @@ public interface IChatRepository
     /// <param name="chatId">Chat id for search</param>
     /// <param name="cancellationToken">Instance of Cancellation token</param>
     /// <returns>Information about chat</returns>
-    Task<Chat?> GetByChatId(long chatId, CancellationToken cancellationToken);
+    Task<Chat?> GetByChatIdAsync(long chatId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Link chat members to current chat
+    /// </summary>
+    /// <param name="chatInfo">Information of target chat</param>
+    /// <param name="membersInfos">Members to add collection</param>
+    /// <param name="cancellationToken">Instance of Cancellation token</param>
+    Task LinkChatMembersToChatAsync(Chat chatInfo, ICollection<ChatMember> membersInfos, CancellationToken cancellationToken);
 }

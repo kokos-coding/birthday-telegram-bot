@@ -25,7 +25,7 @@ public class DeleteChatByChatIdCommandHandler : BaseHandler<DeleteChatByChatIdCo
     public async override Task<Unit> Handle(DeleteChatByChatIdCommand request, CancellationToken cancellationToken)
     {
         await UnitOfWork.StartTransactionAsync(cancellationToken);
-        var chatInDb = await UnitOfWork.ChatRepository.GetByChatId(request.ChatId, cancellationToken);
+        var chatInDb = await UnitOfWork.ChatRepository.GetByChatIdAsync(request.ChatId, cancellationToken);
         if (chatInDb is null)
             throw new Exception($"Chat with id {request.ChatId} not found in store");
         await UnitOfWork.ChatRepository.DeleteAsync(chatInDb, cancellationToken);

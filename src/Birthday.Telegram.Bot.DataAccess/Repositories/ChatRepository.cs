@@ -51,10 +51,17 @@ public class ChatRepository : IChatRepository
         _dbContext.Remove(chatInDb);
     }
 
-    /// <inheritdoc cref="GetByChatId" />
-    public Task<Chat?> GetByChatId(long chatId, CancellationToken cancellationToken) =>
+    /// <inheritdoc cref="GetByChatIdAsync" />
+    public Task<Chat?> GetByChatIdAsync(long chatId, CancellationToken cancellationToken) =>
         _dbContext.Chats
             .Include(it => it.GroupChatChatMembers)
             .ThenInclude(it => it.ChatMember)
             .FirstOrDefaultAsync(it => it.ChatId.Equals(chatId), cancellationToken);
+
+    /// <inheritdoc cref="LinkChatMembersToChatAsync" />
+    public Task LinkChatMembersToChatAsync(Chat chatInfo, ICollection<ChatMember> membersInfos, CancellationToken cancellationToken)
+    {
+        var entriesToAdd = membersInfos.Select(it => new ChatChatMember() { ChatId = chatInfo.Id, MemberId = it.Id }).ToList();
+        return _dbContext.ChatChatMembers.AddRangeAsync(entriesToAdd, cancellationToken);
+    }
 }

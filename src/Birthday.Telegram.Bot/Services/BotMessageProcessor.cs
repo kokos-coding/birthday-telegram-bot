@@ -92,14 +92,14 @@ public class BotMessageProcessor : IBotProcessor<Message>
                     MemberId = userInChat.User.Id
                 }, cancellationToken);
 
-                if(userInDb.BirthDay is not null)
+                if (userInDb.BirthDay is not null)
                 {
                     await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
                                                 text: @$"И снова здравствуйте\, {chatInfo.Username}\!
 У меня уже есть все данные о Вас\, поэтому уже не нужно снова вводить свою дату рождения\.",
                                                 parseMode: Messages.ParseMode,
                                                 cancellationToken: cancellationToken);
-                return;
+                    return;
                 }
             }
             catch (EntityNotFoundException ex)
@@ -111,12 +111,17 @@ public class BotMessageProcessor : IBotProcessor<Message>
                     Username = chatInfo.Username,
                     Birthday = null,
                 }, cancellationToken);
+                await _mediator.Send(new LinkMembersToChatCommand()
+                {
+                    ChatId = mainChatId,
+                    MembersIds = new List<long>() { chatInfo.Id }
+                }, cancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError("User with id {userId} from chat {chatId} not in this chat. Exception: {exception}", 
-                    chatInfo.Id, 
-                    mainChatId, 
+                _logger.LogError("User with id {userId} from chat {chatId} not in this chat. Exception: {exception}",
+                    chatInfo.Id,
+                    mainChatId,
                     ex.Message);
                 await _telegramBotClient.SendTextMessageAsync(chatId: chatInfo.Id,
                             text: Messages.ErrorMessages.UserNotInChat,

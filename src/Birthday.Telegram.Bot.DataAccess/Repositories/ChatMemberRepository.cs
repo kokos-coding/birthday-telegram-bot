@@ -52,10 +52,17 @@ public class ChatMemberRepository : IChatMemberRepository
     }
 
     /// <inheritdoc cref="GetByChatMemberIdAsync" />
-    public Task<ChatMember?> GetByChatMemberIdAsync(long chatMemberId, CancellationToken cancellationToken) => 
+    public Task<ChatMember?> GetByChatMemberIdAsync(long chatMemberId, CancellationToken cancellationToken) =>
         _dbContext.ChatMembers
             .Include(it => it.GroupChatChatMembers)
             .ThenInclude(it => it.Chat)
             .FirstOrDefaultAsync(it => it.MemberId.Equals(chatMemberId), cancellationToken);
-    
+
+    /// <inheritdoc cref="GetByChatMembersIdsAsync" />
+    public Task<List<ChatMember>> GetByChatMembersIdsAsync(ICollection<long> chatMembersIds, CancellationToken cancellationToken) =>
+        _dbContext.ChatMembers
+            .Include(it => it.GroupChatChatMembers)
+            .ThenInclude(it => it.Chat)
+            .Where(it => chatMembersIds.Contains(it.MemberId))
+            .ToListAsync(cancellationToken);
 }

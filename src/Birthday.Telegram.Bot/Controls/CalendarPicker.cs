@@ -57,41 +57,51 @@ public static class CalendarPicker
         {
             var action = subCommand switch
             {
-                Constants.SubCommands.GetYearsKeyboard => new CalendarPickerProcessorResult() 
-                                                        { 
-                                                            ResultType = ProcessorResultType.KeyboardMarkup, 
-                                                            KeyboardMarkup = GetYearsKeyboard(currentDate) 
-                                                        },
-                Constants.SubCommands.YearBack => new CalendarPickerProcessorResult() 
-                                                        { 
-                                                            ResultType = ProcessorResultType.KeyboardMarkup, 
-                                                            KeyboardMarkup = GetYearsKeyboard(currentDate.AddYears(-9))
-                                                        },
-                Constants.SubCommands.YearForward => new CalendarPickerProcessorResult() 
-                                                        { 
-                                                            ResultType = ProcessorResultType.KeyboardMarkup, 
-                                                            KeyboardMarkup = GetYearsKeyboard(currentDate.AddYears(9))
-                                                        },
-                Constants.SubCommands.MonthBack => new CalendarPickerProcessorResult() 
-                                                        { 
-                                                            ResultType = ProcessorResultType.KeyboardMarkup, 
-                                                            KeyboardMarkup = GetCalendarKeyboard(currentDate.AddMonths(-1), DefaultCultureInfo)
-                                                        },
-                Constants.SubCommands.MonthForward => new CalendarPickerProcessorResult() 
-                                                        { 
-                                                            ResultType = ProcessorResultType.KeyboardMarkup, 
-                                                            KeyboardMarkup = GetCalendarKeyboard(currentDate.AddMonths(1), DefaultCultureInfo)
-                                                        },
-                Constants.SubCommands.SetYear => new CalendarPickerProcessorResult() 
-                                                        { 
-                                                            ResultType = ProcessorResultType.KeyboardMarkup, 
-                                                            KeyboardMarkup = GetCalendarKeyboard(currentDate, DefaultCultureInfo)
-                                                        },
-                Constants.SubCommands.SetDate => new CalendarPickerProcessorResult() 
-                                                        { 
-                                                            ResultType = ProcessorResultType.Date, 
-                                                            TargetDate = currentDate
-                                                        },
+                Constants.SubCommands.GetYearsKeyboard => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetYearsKeyboard(currentDate)
+                },
+                Constants.SubCommands.GetMonthsKeyboard => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetMonthsKeyboard(currentDate)
+                },
+                Constants.SubCommands.YearBack => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetYearsKeyboard(currentDate.AddYears(-9))
+                },
+                Constants.SubCommands.YearForward => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetYearsKeyboard(currentDate.AddYears(9))
+                },
+                Constants.SubCommands.MonthBack => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetCalendarKeyboard(currentDate.AddMonths(-1), DefaultCultureInfo)
+                },
+                Constants.SubCommands.MonthForward => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetCalendarKeyboard(currentDate.AddMonths(1), DefaultCultureInfo)
+                },
+                Constants.SubCommands.SetYear => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetMonthsKeyboard(currentDate)
+                },
+                Constants.SubCommands.SetMonth => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.KeyboardMarkup,
+                    KeyboardMarkup = GetCalendarKeyboard(currentDate, DefaultCultureInfo)
+                },
+                Constants.SubCommands.SetDate => new CalendarPickerProcessorResult()
+                {
+                    ResultType = ProcessorResultType.Date,
+                    TargetDate = currentDate
+                },
                 _ => throw new NotImplementedException(),
             };
             return action;
@@ -140,16 +150,16 @@ public static class CalendarPicker
                     Constants.EmptyInlineKeyboardButton!,
                     Constants.EmptyInlineKeyboardButton!,
             };
-        
+
         var square = keyboardHeigh * keyboardWidth;
-        var start = square % 2 == 0 ? 
-                    -(square / 2) - 1 : 
+        var start = square % 2 == 0 ?
+                    -(square / 2) - 1 :
                     -(square / 2);
         var keyboard = new List<List<InlineKeyboardButton>>();
-        for(var col = 0; col < keyboardWidth; col++)
+        for (var col = 0; col < keyboardWidth; col++)
         {
             var keyboardRow = new List<InlineKeyboardButton>();
-            for(var row = 0; row < keyboardHeigh; row++)
+            for (var row = 0; row < keyboardHeigh; row++)
             {
                 keyboardRow.Add(GetYearKeyBoardButton(centralDate, start));
                 start++;
@@ -161,13 +171,42 @@ public static class CalendarPicker
         return new InlineKeyboardMarkup(keyboard);
     }
 
+    private static InlineKeyboardMarkup GetMonthsKeyboard(DateTime centralDate)
+    {
+        var keyboardWidth = 4;
+        var keyboardHeigh = 3;
+
+        static InlineKeyboardButton GetMonthKeyBoardButton(string monthName, DateTime callbackDate) =>
+            InlineKeyboardButton.WithCallbackData(monthName,
+                                $"{Constants.FullCommands.SetMonth} {callbackDate.ToShortDateString()}");
+
+        var monthCounter = 1;
+        var date = new DateTime(centralDate.Year, monthCounter, centralDate.Day);
+        var keyboard = new List<List<InlineKeyboardButton>>();
+        for (var col = 0; col < keyboardWidth; col++)
+        {
+            var keyboardRow = new List<InlineKeyboardButton>();
+            for (var row = 0; row < keyboardHeigh; row++)
+            {
+                var month = Helpers.GetMonthName(monthCounter);
+                keyboardRow.Add(GetMonthKeyBoardButton(month, date));
+                date = date.AddMonths(1);
+                monthCounter++;
+            }
+            keyboard.Add(keyboardRow);
+        }
+        return new InlineKeyboardMarkup(keyboard);
+    }
+
     private static InlineKeyboardMarkup GetCalendarKeyboard(DateTime currentDate, CultureInfo cultureInfo)
     {
         InlineKeyboardButton[] GetHeader(DateTime currentDate)
         {
             return new InlineKeyboardButton[]
             {
-                InlineKeyboardButton.WithCallbackData($"{Helpers.GetMonthName(currentDate)} {currentDate.Year}",
+                InlineKeyboardButton.WithCallbackData($"{Helpers.GetMonthName(currentDate)}",
+                    $"{Constants.FullCommands.GetMonthsKeyboard} {currentDate.ToShortDateString()}"),
+                InlineKeyboardButton.WithCallbackData($"{currentDate.Year}",
                     $"{Constants.FullCommands.GetYearsKeyboard} {currentDate.ToShortDateString()}")
             };
         }
@@ -245,9 +284,11 @@ public static class CalendarPicker
         public static class SubCommands
         {
             public const string GetYearsKeyboard = "yearskeyboard";
+            public const string GetMonthsKeyboard = "monthskeyboard";
             public const string YearBack = "yearback";
             public const string YearForward = "yearforward";
             public const string SetYear = "setyear";
+            public const string SetMonth = "setmonth";
             public const string MonthBack = "monthback";
             public const string MonthForward = "monthforward";
             public const string SetDate = "setdate";
@@ -256,9 +297,11 @@ public static class CalendarPicker
         public static class FullCommands
         {
             public static string GetYearsKeyboard => $"{MainCommand} {SubCommands.GetYearsKeyboard}";
+            public static string GetMonthsKeyboard => $"{MainCommand} {SubCommands.GetMonthsKeyboard}";
             public static string YearBack => $"{MainCommand} {SubCommands.YearBack}";
             public static string YearForward => $"{MainCommand} {SubCommands.YearForward}";
             public static string SetYear => $"{MainCommand} {SubCommands.SetYear}";
+            public static string SetMonth => $"{MainCommand} {SubCommands.SetMonth}";
             public static string MonthBack => $"{MainCommand} {SubCommands.MonthBack}";
             public static string MonthForward => $"{MainCommand} {SubCommands.MonthForward}";
             public static string SetDate => $"{MainCommand} {SubCommands.SetDate}";
@@ -309,6 +352,9 @@ public static class CalendarPicker
 
         public static string GetMonthName(DateTime currentDate) =>
             Constants.Months[CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(currentDate.Month)].Name;
+
+        public static string GetMonthName(int monthNumber) =>
+            Constants.Months[CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(monthNumber)].Name;
 
         public static List<string> GetSubcommandAndArgument(string calendarPickerCommand)
         {

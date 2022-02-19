@@ -249,6 +249,12 @@
             <param name="mainChatId">Идентификатор главного чата</param>
             <returns>Приветственное сообщение</returns>
         </member>
+        <member name="M:Birthday.Telegram.Bot.Models.Messages.MessageAfterSaveBirthdayDate">
+            <summary>
+            Сообщение которое отправляется после того, как пользователь вводит свое день рождение
+            </summary>
+            <returns>Сообщение</returns>
+        </member>
         <member name="T:Birthday.Telegram.Bot.Models.Messages.ErrorMessages">
             <summary>
             Типизированные сообщения об ошибках

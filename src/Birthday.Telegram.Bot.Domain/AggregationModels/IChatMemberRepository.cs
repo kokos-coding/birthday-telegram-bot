@@ -35,10 +35,18 @@ public interface IChatMemberRepository
     Task DeleteAsync(long chatMemberId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Get chat info by chat member id
+    /// Get member info by chat member id
     /// </summary>
-    /// <param name="chatMemberId">Chat member i for search</param>
+    /// <param name="chatMemberId">Chat member id for search</param>
     /// <param name="cancellationToken">Instance of Cancellation token</param>
     /// <returns>Information about chat member</returns>
     Task<ChatMember?> GetByChatMemberIdAsync(long chatMemberId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Get members info by chat member id
+    /// </summary>
+    /// <param name="chatMembersIds">Chat members ids for search</param>
+    /// <param name="cancellationToken">Instance of Cancellation token</param>
+    /// <returns>Information about chat members</returns>
+    Task<List<ChatMember>> GetByChatMembersIdsAsync(ICollection<long> chatMembersIds, CancellationToken cancellationToken);
 }
